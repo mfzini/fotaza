@@ -13,8 +13,8 @@ User.init(
     {
         id: {
             type: DataTypes.UUID,
-            primaryKey: true,
-            defaultValue: sequelize.literal('gen_random_uuid()')
+            defaultValue: DataTypes.UUIDV4,
+            primaryKey: true
         },
         username: {
             type: DataTypes.STRING,
