@@ -1,0 +1,29 @@
+{
+  "name": "fotaza",
+  "version": "1.0.0",
+  "description": "tpi web ii",
+  "homepage": "https://github.com/mfzini/fotaza#readme",
+  "bugs": {
+    "url": "https://github.com/mfzini/fotaza/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mfzini/fotaza.git"
+  },
+  "license": "ISC",
+  "author": "mfzini",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "start": "node --env-file=.env main.js",
+    "dev": "node --env-file=.env --watch main.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "express": "^5.2.1",
+    "pg": "^8.20.0",
+    "pg-hstore": "^2.3.4",
+    "pug": "^3.0.4",
+    "sequelize": "^6.37.8"
+  }
+}
