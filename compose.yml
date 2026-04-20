@@ -1,0 +1,16 @@
+services:
+  db:
+    image: docker.io/library/postgres:18-alpine
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: example
+    volumes:
+      - postgres_data:/var/lib/postgresql/data:Z
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
