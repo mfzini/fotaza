@@ -4,8 +4,21 @@ export async function getSignUp(req, res) {
     res.render('signup');
 }
 
+export async function getLogin(req, res) {
+    res.render('login');
+}
 export async function postSignUp(req, res) {
     const { username, email, password } = req.body;
-    const user = await User.create({ username, email, password });
-    res.redirect('login');
+    try {
+        
+        const user = await User.create({ username, email, password });
+        res.redirect('login');
+    } catch (e) {
+        const err = e.errors[0].message;
+        res.render('signup', {
+            user: { username, email },
+            err
+        })
+    }
+    
 }

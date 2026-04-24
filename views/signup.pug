@@ -7,12 +7,14 @@ html(lang="en")
     body
         form(action="/signup", method="post") 
             label(for="username") Nombre:
-            input(type="text", name="username")
+            input(type="text", name="username" value=(user? user.username:""))
             
             label(for="email") Email:
-            input(type="email", name="email")
+            input(type="email", name="email" value=(user? user.email:""))
 
             label(for="password") Contraseña:
             input(type="password", name="password")
 
             input(type="submit", value="Crear cuenta")
+    if err
+        p #{err}
