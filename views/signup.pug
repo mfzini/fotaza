@@ -1,20 +1,18 @@
-doctype html
-html(lang="en")
-    head
-        meta(charset="UTF-8")
-        meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        title Document
-    body
-        form(action="/signup", method="post") 
-            label(for="username") Nombre:
-            input(type="text", name="username" value=(user? user.username:""))
-            
-            label(for="email") Email:
-            input(type="email", name="email" value=(user? user.email:""))
+extends layout
 
-            label(for="password") Contraseña:
-            input(type="password", name="password")
+block title
+    title Registrarse
+block body
+    form(action="/signup", method="post") 
+        label(for="username") Nombre:
+        input(type="text", name="username" value=(values? values.username:""))
+        
+        label(for="email") Email:
+        input(type="email", name="email" value=(values? values.email:""))
 
-            input(type="submit", value="Crear cuenta")
+        label(for="password") Contraseña:
+        input(type="password", name="password")
+
+        input(type="submit", value="Crear cuenta")
     if err
         p #{err}

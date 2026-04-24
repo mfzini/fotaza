@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 
 
 export class User extends Model {
-    comparePassword(password) {
+    async comparePassword(password) {
         return bcrypt.compare(password, this.password);
     }
 }

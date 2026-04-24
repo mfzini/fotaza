@@ -1,15 +1,16 @@
-doctype html
-html(lang="en")
-    head
-        meta(charset="UTF-8")
-        meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        title Document
-    body
-        form(action="/login", method="post") 
-            label(for="email") Email:
-            input(type="email", name="email")
+extends layout 
 
-            label(for="password") Contraseña:
-            input(type="password", name="password")
+block title
+    title Iniciar Sesión
+block body
+    form(action="/login", method="post") 
+        label(for="email") Email:
+        input(type="email", name="email", value=(email?email:""))
 
-            input(type="submit", value="Crear cuenta")
+        label(for="password") Contraseña:
+        input(type="password", name="password")
+
+        input(type="submit", value="Iniciar Sesión")
+
+    if err
+        p #{err}
