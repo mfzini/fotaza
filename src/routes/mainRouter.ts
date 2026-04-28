@@ -1,8 +1,8 @@
-import express from 'express';
+import express, { Router } from 'express';
 import { getHome } from '../controllers/mainController.js';
 import { authRouter } from './authRouter.js';
 
-export const mainRouter = express.Router();
+export const mainRouter: Router = express.Router();
 
 mainRouter.get('/', getHome);
 mainRouter.use(authRouter);
