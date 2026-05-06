@@ -15,4 +15,6 @@ block body
 
         input(type="submit", value="Crear cuenta")
     if err
-        p #{err}
+        ul
+            each e in err
+                li=e

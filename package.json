@@ -17,7 +17,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/main.js",
-    "dev": "tsx watch src/main.ts"
+    "dev": "bun --watch src/main.ts"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

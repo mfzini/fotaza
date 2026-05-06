@@ -61,8 +61,7 @@ export class User extends Model<User, {
 
     @BeforeSave
     static async hashPassword(user: User) {
-        if (!user.changed('password'))
-            return;
+        if (!user.changed('password')) return;
         user.password = await bcrypt.hash(user.password, 10);
     }
 
