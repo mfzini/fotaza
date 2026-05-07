@@ -1,0 +1,9 @@
+extends layout 
+
+block title 
+    title Salir
+
+block main
+    form(action='/logout', method="post")
+        input(type="submit", value="Salir")
+        input(type="button", value="Cancelar")

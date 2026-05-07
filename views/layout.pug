@@ -8,7 +8,13 @@ html(lang="es")
         header
             nav
                 ul
-                    li meow
-                    li meow2
+                    li: a(href="/") Inicio
+                    if user
+                        li: a(href="/profile") Ver Perfil
+                        li: form(action="/logout", method="post"): button(type="submit") Salir 🚪
+                    else
+                        li: a(href="/login") Iniciar Sesión
+                        li: a(href="/signup") Crear Cuenta
 
-        block body
+        main
+            block main

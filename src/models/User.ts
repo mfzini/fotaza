@@ -13,7 +13,13 @@ import {
 } from "sequelize-typescript";
 import bcrypt from 'bcrypt';
 
-@Table
+export interface PublicUser {
+    id: string;
+    username: string;
+    email: string;
+}
+
+@Table({ paranoid: true })
 export class User extends Model<User, {
     username: string;
     email: string;
@@ -43,14 +49,14 @@ export class User extends Model<User, {
     @AllowNull(false)
     @Validate({
         len: {
-            args: [6, 30],
+            args: [6, 70],
             msg: "La contraseña debe tener como mínimo seis caracteres."
         }
     })
     @Column(DataType.STRING)
     declare password: string;
 
-    @Unique({ name: "email", msg: "Email ya está en uso." })
+    @Unique({ name: "email", msg: "Email incorrecto." })
     @Validate({
         isEmail: {
             msg: "Formato de email inválido."
@@ -67,5 +73,14 @@ export class User extends Model<User, {
 
     async comparePassword(password: string) {
         return bcrypt.compare(password, this.password);
+    }
+
+    toDTO() : PublicUser {
+        return {
+            id: this.id,
+            username: this.username,
+            email: this.email
+        }
+
     }
 }

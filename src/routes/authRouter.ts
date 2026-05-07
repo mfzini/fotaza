@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import { getLogin, getSignUp, postLogin, postSignUp } from '../controllers/authController.js';
+import { getLogin, getSignUp, postLogout, postLogin, postSignUp, getLogout } from '../controllers/authController.js';
 
 export const authRouter: Router = express.Router();
 
@@ -9,4 +9,8 @@ authRouter.route('/signup')
 
 authRouter.route('/login')
     .get(getLogin)
-    .post(postLogin)
+    .post(postLogin);
+
+authRouter.route('/logout')
+    .get(getLogout)
+    .post(postLogout);
