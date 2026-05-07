@@ -55,10 +55,6 @@ export async function postLogin(req: Request, res: Response, next: NextFunction)
     })(req, res, next);
 }
 
-export async function getLogout(req: Request, res: Response) {
-    req.isAuthenticated() ? res.render('logout') : res.redirect('/login');
-}
-
 export async function postLogout(req: Request, res: Response, next: NextFunction) {
     req.logout(err => {
         if (err) {
