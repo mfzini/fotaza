@@ -1,8 +1,12 @@
 import express, { Router } from 'express';
 import { getHome } from '../controllers/mainController.js';
 import { authRouter } from './authRouter.js';
+import { postRouter } from './postRouter.js';
+import { isAuthenticated } from '../middleware/auth.middleware.js';
+import { userRouter } from './userRouter.js';
 
 export const mainRouter: Router = express.Router();
-
 mainRouter.get('/', getHome);
 mainRouter.use(authRouter);
+mainRouter.use(isAuthenticated, postRouter);
+mainRouter.use(userRouter);

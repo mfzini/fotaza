@@ -1,0 +1,23 @@
+extends layout
+
+block head
+    title #{title} - Fotaza
+block body
+    h1#title #{title}
+    p#author: a(href=author.profile) Publicado por: #{author.username}
+    #preview 
+        each f in files
+            if f.mimetype.startsWith('image')
+                img(src=f.url, alt="")
+            else
+                video(src=f.url, controls, muted)
+    p#desc #{desc}
+    p#tags #{tags}
+    
+    form(action=`/post/${id}/comentar`, method="post") 
+        textarea(name="content", placeholder='Escribe un comentario...')
+        button(type="submit") Enviar
+    #cajaComentarios
+        
+        
+

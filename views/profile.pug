@@ -1,0 +1,8 @@
+extends layout 
+block head
+    title Profile
+block body
+    h1#userName #{user.username}
+
+    each p in posts
+        p: a(href=`/post/${p.id}`)  #{p.title}

@@ -6,5 +6,5 @@ export async function getHome(req: Request, res: Response) {
 
 export async function catchAll(err: any, req: Request, res: Response, next: NextFunction) {
     console.error(err);
-    res.send("Algo salió mal =(");
+    res.send(err.message);
 }

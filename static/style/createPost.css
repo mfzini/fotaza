@@ -1,0 +1,88 @@
+#postForm :is(input, textarea, label) {
+    width: 100%;
+    margin: 8px 0;
+}
+textarea {
+    resize: none;
+}
+#preview {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    width: 100%;
+    margin: 8px 0;
+}
+
+.container {
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    height: 8rem;
+}
+
+#preview img,
+video {
+    object-fit: cover;
+    object-position: center;
+    border-radius: 12px;
+    width: 100%;
+    height: 100%;
+}
+
+#upload-btn {
+    display: inline-block;
+    border: 1px solid red;
+    cursor: pointer;
+    position: relative;
+    right: 0;
+}
+
+.upload-btn:hover {
+    background-color: #0056b3;
+}
+
+#files {
+    display: none;
+}
+
+.delbtn {
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    color: rgb(250, 75, 75);
+    border-radius: 50%;
+    border: none;
+    height: 1.5rem;
+    width: 1.5rem;
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.delbtn:hover {
+    background-color: red;
+    color: white;
+}
+
+
+#postForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 60rem;
+    padding: 1rem;
+}
+
+
+.userInput {
+    padding: 0.10rem 0.25rem;
+    font-size: 1rem;
+}
+
+#postForm label {
+    align-self: flex-start;
+    margin-bottom: 2px;
+}
+
+#postForm #desc {
+    height: 5rem;
+
+}

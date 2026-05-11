@@ -1,8 +1,8 @@
 extends layout 
 
-block title
+block head
     title Iniciar Sesión
-block main 
+block body 
     form(action="/login", method="post") 
         label(for="email") Email:
         input(type="email", name="email", value=email)

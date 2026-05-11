@@ -3,18 +3,28 @@ html(lang="es")
     head
         meta(charset="UTF-8")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        block title
+        link(rel="stylesheet", href="/style/index.css")
+        block head
     body
         header
             nav
+                h1#siteName: a(href="/") Fotaza
+                form(action="/search", method="post")
+                    input#search(type="text", name="q", placeholder='Buscar...')
+                    button(type="submit") 🔍
+                    #searchHelper
+                        p 1
+                        p 2
+                        p 3
                 ul
-                    li: a(href="/") Inicio
                     if user
-                        li: a(href="/profile") Ver Perfil
+                        li: a(href='/post/create') Publicar
+                        li: a(href="/profile") Perfil
                         li: form(action="/logout", method="post"): button(type="submit") Salir 🚪
                     else
                         li: a(href="/login") Iniciar Sesión
                         li: a(href="/signup") Crear Cuenta
 
-        main
-            block main
+    block body
+    block scripts
+        script(src="/script/index.js")

@@ -9,14 +9,18 @@ import {
     Unique,
     AllowNull,
     Validate,
-    BeforeSave
+    BeforeSave,
+    HasMany
 } from "sequelize-typescript";
 import bcrypt from 'bcrypt';
+import { Post } from "./Post.js";
 
 export interface PublicUser {
     id: string;
     username: string;
     email: string;
+    profile: string;
+    createdAt: Date;
 }
 
 @Table({ paranoid: true })
@@ -25,7 +29,6 @@ export class User extends Model<User, {
     email: string;
     password: string;
 }> {
-
 
     @PrimaryKey
     @IsUUID(4)
@@ -65,6 +68,8 @@ export class User extends Model<User, {
     @Column(DataType.STRING)
     declare email: string;
 
+    @HasMany(() => Post)
+
     @BeforeSave
     static async hashPassword(user: User) {
         if (!user.changed('password')) return;
@@ -79,7 +84,9 @@ export class User extends Model<User, {
         return {
             id: this.id,
             username: this.username,
-            email: this.email
+            email: this.email,
+            profile: `/profile/${this.id}`,
+            createdAt: this.createdAt
         }
 
     }
