@@ -10,28 +10,17 @@ import {
     AllowNull,
     Validate,
     BeforeSave,
-    HasMany
+    HasMany,
 } from "sequelize-typescript";
 import bcrypt from 'bcrypt';
 import { Post } from "./Post.js";
-
-export interface PublicUser {
-    id: string;
-    username: string;
-    email: string;
-    profile: string;
-    createdAt: Date;
-}
+import { Comment } from "./Comment.js";
+import { Rating } from "./Rating.js";
 
 @Table({ paranoid: true })
-export class User extends Model<User, {
-    username: string;
-    email: string;
-    password: string;
-}> {
+export class User extends Model<User, { username: string; email: string; password: string; }> {
 
     @PrimaryKey
-    @IsUUID(4)
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
     declare id: string;
@@ -69,6 +58,13 @@ export class User extends Model<User, {
     declare email: string;
 
     @HasMany(() => Post)
+    declare posts: Post[]
+
+    @HasMany(() => Comment)
+    declare comments: Comment[];
+
+    @HasMany(() => Rating)
+    declare ratings: Rating[];
 
     @BeforeSave
     static async hashPassword(user: User) {
@@ -78,16 +74,5 @@ export class User extends Model<User, {
 
     async comparePassword(password: string) {
         return bcrypt.compare(password, this.password);
-    }
-
-    toDTO() : PublicUser {
-        return {
-            id: this.id,
-            username: this.username,
-            email: this.email,
-            profile: `/profile/${this.id}`,
-            createdAt: this.createdAt
-        }
-
     }
 }

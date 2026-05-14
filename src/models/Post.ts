@@ -11,49 +11,29 @@ import {
     BelongsToMany,
     AllowNull,
     Validate,
+    HasMany,
 } from "sequelize-typescript";
-import { User, type PublicUser } from "./User.js";
+import { User } from "./User.js";
 import type { UUID } from "node:crypto";
 import { File } from "./File.js";
 import { Op } from "sequelize";
-
-export interface PostDTO {
-    id: string;
-    author: PublicUser;
-    title: string;
-    desc: string;
-    tags: string[];
-    files: {
-        url: string;
-        mimetype: string;
-    }[];
-    location: string;
-}
+import { Comment } from "./Comment.js";
 
 @Table({ paranoid: true })
-export class Post extends Model<Post, {
-    authorId: UUID;
-    title: string;
-    desc: string;
-}> {
-    public async getDTO(): Promise<PostDTO> {
-        const author = (await this.$get('author'))?.toDTO();
-        const tags = (await this.$get('tags'))?.map(t => t.tag);
-        const files = (await this.$get('files'))?.map((f) => {
-            const { url, mimetype } = f;
-            return { url, mimetype }
+export class Post extends Model<Post, { authorId: UUID; title: string; desc: string; }> {
+    public static async fetchAllByPk(pk: string) {
+        return Post.findByPk(pk, {
+            include: [User, Tag, {
+                model: File,
+                include: [{
+                    model: Comment,
+                    include: [User]
+                }]
+            }]
         });
-        return {
-            id: this.id,
-            author: author,
-            title: this.title,
-            desc: this.desc,
-            tags,
-            files,
-        } as PostDTO;
     }
+
     @PrimaryKey
-    @IsUUID(4)
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
     declare id: string;
@@ -66,20 +46,17 @@ export class Post extends Model<Post, {
     @Column(DataType.STRING)
     declare desc: string;
 
+    @BelongsToMany(() => Tag, () => PostTags)
+    declare tags: Tag[];
+
     @ForeignKey(() => User)
-    declare authorId: string;
+    declare authorId: UUID;
 
     @BelongsTo(() => User)
     declare author: User;
 
     @BelongsToMany(() => File, () => PostFiles)
     declare files: File[];
-
-    @ForeignKey(() => Tag)
-    declare tagId: string;
-
-    @BelongsToMany(() => Tag, () => PostTags)
-    declare tags: Tag[];
 
     public static async findByUsername(username: string): Promise<Post[]> {
         return Post.findAll({
@@ -115,17 +92,23 @@ export class Tag extends Model<Tag, { tag: string }> {
     @Column(DataType.STRING)
     declare tag: string;
 
+    @ForeignKey(() => Post)
+    declare postId: UUID;
+
     @BelongsToMany(() => Post, () => PostTags)
-    declare post: Post[];
+    declare posts: Post[];
+
+
 }
 
 @Table
 export class PostTags extends Model {
     @ForeignKey(() => Post)
     @Column(DataType.UUID)
-    declare postId: string;
+    declare postId: UUID;
 
     @ForeignKey(() => Tag)
     @Column(DataType.STRING)
     declare tag: string;
 }
+

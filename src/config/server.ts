@@ -9,7 +9,18 @@ import './passport.js';
 import { catchAll } from '../controllers/mainController.js';
 import { setUserContext } from '../middleware/setUserContext.js';
 export const server = express();
-server.use(helmet());
+const [storageDomain] = process.env.S3_BUCKET!.split('/storage');
+const mediaDirectives = ["'self'", "data:", "blob:", storageDomain ?? '']
+server.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+            "img-src": mediaDirectives,
+            'media-src': mediaDirectives,
+            'script-src': ["'sha256-v1QsHMh74Sa12+Pes1w6hbnSKzWWo+5jewNKmam6Dgw='",...mediaDirectives],
+        }
+    }
+}));
 
 server.use(session({
     name: 'jwt',

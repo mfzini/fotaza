@@ -6,15 +6,15 @@ const client = new S3Client({
     region: process.env.S3_REGION!,
     endpoint: process.env.S3_ENDPOINT!,
     credentials: {
-        accessKeyId: process.env.KEY_ID!,
-        secretAccessKey: process.env.SECRET_KEY!
+        accessKeyId: process.env.S3_KEY_ID!,
+        secretAccessKey: process.env.S3_SECRET_KEY!
     }
 })
-const prefix = process.env.S3_PREFIX!;
+const prefix = process.env.S3_BUCKET!;
 
 export async function upload(file: any, hash: string) {
-    const name = `${hash}.${file.mimetype.split('/')[1]}`
-    const location = `${prefix}/${name}`
+    const name: string = `${hash}.${file.mimetype.split('/')[1]}`
+    const location: string = `${prefix}/${name}`
     let result = await checkFile('fotaza', name);
     if (result) return location;
     try {
@@ -38,9 +38,8 @@ const checkFile = async (bucket: string, key: string) => {
             Bucket: bucket,
             Key: key,
         });
-        const response = await client.send(command);
-        return response;
+        return await client.send(command);
     } catch (error) {
-        
+        console.error(error);
     }
 };

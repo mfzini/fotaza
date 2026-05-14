@@ -1,0 +1,24 @@
+
+.container {
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    background-color: black;
+    color: red;
+}
+
+.container :is(img, video) {
+    width:70vw;
+    height: 70vh;
+    object-fit: contain;
+    object-position: center;
+    border-radius: 12px;
+}
+
+.invisible {
+    display: none;
+}
+
+.visible {
+    display: inline-block;
+}

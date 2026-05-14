@@ -1,23 +1,42 @@
 extends layout
 
 block head
+    link(rel="stylesheet", href="/style/viewPost.css")
     title #{title} - Fotaza
 block body
-    h1#title #{title}
-    p#author: a(href=author.profile) Publicado por: #{author.username}
-    #preview 
-        each f in files
-            if f.mimetype.startsWith('image')
-                img(src=f.url, alt="")
-            else
-                video(src=f.url, controls, muted)
-    p#desc #{desc}
-    p#tags #{tags}
-    
-    form(action=`/post/${id}/comentar`, method="post") 
-        textarea(name="content", placeholder='Escribe un comentario...')
-        button(type="submit") Enviar
-    #cajaComentarios
+    main
+        h1#title #{title}
+        p#author Publicado por:     
+            a(href=`/user/${author.id}`) #{author.username}
+            span  el #{createdAt}
+        #gallery
+            each f in files
+                .container.invisible
+                        if f.mimetype.startsWith('image')
+                            img(src=`${f.url}`, alt="")
+                        else
+                            video(src=f.url, controls)
+            
+                        form(action=`/comment`, method="post")
+                            input(type="hidden", name="id", value=`${f.id}`)
+                            input(type="hidden", name="postId", value=`${id}`)
+                            textarea(name="comment", placeholder=`${f.id}`)
+                            button(type="submit") Comentar
+                        for c in f.comments
+                            p #{c.author.username}
+                            p #{c.text}
+                            p #{c.createdAt}
+            button#btn_next(type="button") next
+
+
+        p#desc #{desc}
+        p= tags.map(t => t.tag).join(', ')
+        form(action=`/post/${id}/valorar`, method="post")
+            for i in [1, 2, 3, 4, 5]
+                input.valorar(type="radio", name="valoracion" value=`${i}`)
+                label #{i}
+            button(type="submit") send
+    script(src="/script/viewPost.js") 
         
         
 
