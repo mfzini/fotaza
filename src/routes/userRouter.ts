@@ -1,7 +1,6 @@
 import { Router } from "express";
-import { getProfile, getProfileById } from "../controllers/userController.js";
+import { getProfile } from "../controllers/userController.js";
 
 export const userRouter = Router();
 
-userRouter.get('/profile', getProfile)
-userRouter.get('/profile/:id', getProfileById);
+userRouter.get(['/profile', '/profile/:id'], getProfile);

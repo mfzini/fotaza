@@ -7,7 +7,6 @@ import {
     ForeignKey,
     BelongsTo,
     Default,
-    IsUUID,
     BelongsToMany,
     AllowNull,
     Validate,
@@ -18,14 +17,15 @@ import type { UUID } from "node:crypto";
 import { File } from "./File.js";
 import { Op } from "sequelize";
 import { Comment } from "./Comment.js";
+import { Rating } from "./Rating.js";
 
-@Table({ paranoid: true })
+@Table
 export class Post extends Model<Post, { authorId: UUID; title: string; desc: string; }> {
     public static async fetchAllByPk(pk: string) {
         return Post.findByPk(pk, {
             include: [User, Tag, {
                 model: File,
-                include: [{
+                include: [Rating, {
                     model: Comment,
                     include: [User]
                 }]
@@ -36,7 +36,7 @@ export class Post extends Model<Post, { authorId: UUID; title: string; desc: str
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
-    declare id: string;
+    declare id: UUID;
 
     @AllowNull(false)
     @Validate({ notEmpty: true, notNull: true })
@@ -46,6 +46,9 @@ export class Post extends Model<Post, { authorId: UUID; title: string; desc: str
     @Column(DataType.STRING)
     declare desc: string;
 
+    @HasMany(() => File, { onDelete: 'CASCADE' })
+    declare files: File[];
+
     @BelongsToMany(() => Tag, () => PostTags)
     declare tags: Tag[];
 
@@ -54,9 +57,6 @@ export class Post extends Model<Post, { authorId: UUID; title: string; desc: str
 
     @BelongsTo(() => User)
     declare author: User;
-
-    @BelongsToMany(() => File, () => PostFiles)
-    declare files: File[];
 
     public static async findByUsername(username: string): Promise<Post[]> {
         return Post.findAll({
@@ -73,17 +73,6 @@ export class Post extends Model<Post, { authorId: UUID; title: string; desc: str
             where: { '$tags.tag$': { [Op.in]: tags } }
         });
     }
-}
-
-@Table
-export class PostFiles extends Model {
-    @ForeignKey(() => Post)
-    @Column(DataType.UUID)
-    declare postId: string
-
-    @ForeignKey(() => File)
-    @Column(DataType.UUID)
-    declare fileId: string;
 }
 
 @Table

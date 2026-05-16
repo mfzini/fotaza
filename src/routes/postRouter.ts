@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
 import multer from 'multer';
-import { getCreatePost, postCreatePost, viewPost } from '../controllers/postController.js';
+import { getCreatePost, getFiles, postCreatePost, viewPost } from '../controllers/postController.js';
 import { checkCreatePost } from '../middleware/checkCreatePost.middleware.js';
 
 const multer_upload = multer()
@@ -12,3 +12,5 @@ postRouter.route('/post/create')
 
 postRouter.route('/post/:id')
     .get(viewPost)
+
+postRouter.get('/post/:id/files', getFiles);

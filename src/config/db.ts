@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize-typescript";
 import { User } from "../models/User.js";
-import { Post, Tag, PostFiles, PostTags } from "../models/Post.js";
+import { Post, Tag, PostTags } from "../models/Post.js";
 import { File } from "../models/File.js";
 import { Comment } from "../models/Comment.js";
 import { Rating } from "../models/Rating.js";
@@ -10,7 +10,6 @@ export const sequelize: Sequelize = new Sequelize(process.env.DB_URL!, {
   models: [
     User,
     Post,
-    PostFiles,
     PostTags,
     File,
     Tag,

@@ -5,38 +5,39 @@ block head
     title #{title} - Fotaza
 block body
     main
-        h1#title #{title}
-        p#author Publicado por:     
-            a(href=`/user/${author.id}`) #{author.username}
-            span  el #{createdAt}
+        #postHeader
+            h1#title #{title}
+            #postData Publicado por: 
+                a(href=`/profile/${author.id}`) #{`${author.username}`}
+                span #{` el ${new Date(createdAt).toLocaleDateString('es-AR')}`}
         #gallery
-            each f in files
-                .container.invisible
-                        if f.mimetype.startsWith('image')
-                            img(src=`${f.url}`, alt="")
-                        else
-                            video(src=f.url, controls)
+            button#btn_p.gbtns(type="button") <
+            #mediaContainer
+            button#btn_n.gbtns(type="button") >
+        form#ratingForm(action="", method="post")
+        .rating
+            input#star5(type="radio" name="rating" value="5")
+            label(for="star5") ★
+            input#star4(type="radio" name="rating" value="4")
+            label(for="star4") ★
+            input#star3(type="radio" name="rating" value="3")
+            label(for="star3") ★
+            input#star2(type="radio" name="rating" value="2")
+            label(for="star2") ★
+            input#star1(type="radio" name="rating" value="1")
+            label(for="star1") ★
             
-                        form(action=`/comment`, method="post")
-                            input(type="hidden", name="id", value=`${f.id}`)
-                            input(type="hidden", name="postId", value=`${id}`)
-                            textarea(name="comment", placeholder=`${f.id}`)
-                            button(type="submit") Comentar
-                        for c in f.comments
-                            p #{c.author.username}
-                            p #{c.text}
-                            p #{c.createdAt}
-            button#btn_next(type="button") next
+        #postContent
+            #desc: p #{desc}
+            #tags: p tags: 
+                =tags.map(t => t.tag).join(', ')
+        form#postComment(action="", method="post") 
+            textarea(name="text", placeholder='Deja un commentario.') 
+            button(type="submit") ⮞
+        #comments
+             
 
-
-        p#desc #{desc}
-        p= tags.map(t => t.tag).join(', ')
-        form(action=`/post/${id}/valorar`, method="post")
-            for i in [1, 2, 3, 4, 5]
-                input.valorar(type="radio", name="valoracion" value=`${i}`)
-                label #{i}
-            button(type="submit") send
-    script(src="/script/viewPost.js") 
+    script(type='module', src="/script/viewPost.js") 
         
         
 

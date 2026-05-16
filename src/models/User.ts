@@ -3,7 +3,6 @@ import {
     Model,
     Column,
     PrimaryKey,
-    IsUUID,
     Default,
     DataType,
     Unique,

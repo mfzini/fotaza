@@ -14,9 +14,11 @@ export async function getRatings(req: Request, res: Response, next: NextFunction
         res.status(200).json(valoraciones);
     }
 
-    const ratings = await Rating.findAll({where: {
-        postId
-    }})
+    const ratings = await Rating.findAll({
+        where: {
+            postId
+        }
+    })
 
     return res.status(200).json(ratings);
 
@@ -24,18 +26,23 @@ export async function getRatings(req: Request, res: Response, next: NextFunction
 
 export async function rate(req: Request, res: Response, next: NextFunction) {
     const userId = (req.user as User).id;
-    const fileId = req.body.fileId;
-    const value = req.body.value as number;
-    const exists = await Rating.findOne({ where: { userId, fileId } });
-    if (exists) {
-        exists.$set('value', value);
-        return res.json({ msg: 'Updated.', exists });
-    }
+    const user = req.user as User;
+    const { fileId, value } = req.body;
     const file = await File.findByPk(fileId);
     if (!file) return res.json(new Error("No pudimos encotrar el archivo."));
 
-    const rating = await file?.$create('rating', { userId, value });
-    res.json(rating);
+    let rating = await Rating.findOne({ where: { userId, fileId } });
+    if (!rating) {
+        rating = await Rating.create({ fileId, value, userId });
+        return res.status(201).json(rating);
+    }
+    if (rating.value == value) {
+        await rating.destroy();
+        return res.status(204).end();
+    }
+    rating.value = value;
+    await rating.save();
+    res.status(202).end();
 }
 
 

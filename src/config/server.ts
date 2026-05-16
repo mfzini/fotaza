@@ -17,7 +17,6 @@ server.use(helmet({
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
             "img-src": mediaDirectives,
             'media-src': mediaDirectives,
-            'script-src': ["'sha256-v1QsHMh74Sa12+Pes1w6hbnSKzWWo+5jewNKmam6Dgw='",...mediaDirectives],
         }
     }
 }));
@@ -39,6 +38,7 @@ server.use(passport.initialize());
 server.use(passport.session());
 
 server.use(express.urlencoded({ extended: true }));
+server.use(express.json());
 server.use(express.static(path.join(import.meta.dirname, '..', '..', 'static')));
 server.set('view engine', 'pug');
 server.set('views', path.join(import.meta.dirname, "..", "..", 'views'));

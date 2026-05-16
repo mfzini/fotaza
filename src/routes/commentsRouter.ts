@@ -3,5 +3,5 @@ import { makeComment } from '../controllers/commentController.js';
 
 export const commentsRouter: Router = express.Router();
 
-commentsRouter.route('/comment/')
+commentsRouter.route('/comment/:fileId')
     .post(makeComment);

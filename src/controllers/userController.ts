@@ -3,14 +3,11 @@ import { User } from "../models/User.js";
 import { Post } from "../models/Post.js";
 
 export async function getProfile(req: Request, res: Response, next: NextFunction) {
-    const user = req.user as User;
-    const posts = await Post.findByUsername(user.username);
-    res.render('profile',{user, posts});
-}
-
-export async function getProfileById(req: Request, res: Response, next: NextFunction) {
-    const userId = req.params.id as string;
-    const user = await User.findByPk(userId);
+    let userId = req.params.id as string;
+    if (!userId) {
+        userId = (req.user as User).id;
+    }
+    const user = await User.findByPk(userId, {include: [Post]});
     if (!user) next(new Error('Estamos teniendo dificultades para encontrar ese usuario.'));
-    res.render('profile', user?.toJSON());
+    res.render('profile', {profile: user?.toJSON()});
 }

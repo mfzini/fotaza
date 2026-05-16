@@ -1,24 +1,59 @@
 const input = document.getElementById('files');
 const preview = document.getElementById('preview');
-let dt = new DataTransfer();
+const subitBtn = document.getElementById('submit');
+const dt = new DataTransfer();
+const hashSet = new Set();
 
-input.addEventListener('change', (event) => {
+subitBtn.addEventListener('click', (e) => {
+    input.files = dt.files;
+});
+
+input.addEventListener('change', async (event) => {
     event.preventDefault();
-    ext: for (const tbu of event.target.files) {
+    for (const tbu of event.target.files) {
         if (dt.files.length == 10) {
             alert('Máximo 10 archivos.');
             break;
         }
-        for (const dtf of dt.files)
-            if (tbu.name == dtf.name && tbu.size == dtf.size)
-                continue ext;
+        const hash = await getHash(tbu);
+        if (hashSet.has(hash))
+            continue;
+        hashSet.add(hash);
         dt.items.add(tbu);
-        createHTMLElement(tbu);
+        createPreviewContainer(tbu, hash);
     }
-    input.files = dt.files;
 });
 
-function getMediaElement(f) {
+function createPreviewContainer(file, hash) {
+    const content = getMediaHTML(file)
+    if (!content) return;
+
+    const container = document.createElement('div');
+    container.classList.add('container');
+    container.appendChild(content);
+
+    const del_btn = document.createElement('button');
+    del_btn.classList.add('delbtn');
+    del_btn.textContent = 'X';
+    del_btn.addEventListener('click', e => {
+        dt.items.remove(file);
+        hashSet.delete(hash);
+        preview.removeChild(container);
+    })
+
+    container.appendChild(del_btn);
+    preview.appendChild(container);
+}
+
+async function getHash(file) {
+    const arrayBuffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+}
+
+function getMediaHTML(f) {
     let element;
     if (f.type.startsWith('image')) {
         element = new Image();
@@ -32,24 +67,4 @@ function getMediaElement(f) {
         element.muted = true;
     }
     return element;
-}
-function createHTMLElement(file) {
-    const content = getMediaElement(file)
-    if (!content) return;
-
-    const container = document.createElement('div');
-    container.classList.add('container');
-    container.appendChild(content);
-
-    const del_btn = document.createElement('button');
-    del_btn.classList.add('delbtn');
-    del_btn.textContent = 'X';
-    del_btn.addEventListener('click', e => {
-        dt.items.remove(file);
-        preview.removeChild(container);
-    })
-
-
-    container.appendChild(del_btn);
-    preview.appendChild(container);
 }

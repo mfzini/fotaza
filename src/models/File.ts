@@ -4,21 +4,18 @@ import {
     Column,
     PrimaryKey,
     DataType,
-    BelongsToMany,
     Default,
     HasMany,
+    BelongsTo,
     ForeignKey,
+    BelongsToMany,
 } from "sequelize-typescript";
-import { Post, PostFiles } from "./Post.js";
+import { Post } from "./Post.js";
 import { Comment } from "./Comment.js";
 import { Rating } from "./Rating.js";
 
 @Table({ paranoid: true, })
-export class File extends Model<File, {
-    hash: string;
-    url: string;
-    mimetype: string;
-}> {
+export class File extends Model {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
@@ -39,8 +36,10 @@ export class File extends Model<File, {
     @HasMany(() => Comment)
     declare comments: Comment[];
 
-    @BelongsToMany(() => Post, () => PostFiles)
+    @BelongsTo(() => Post)
     declare posts: Post[];
+    @ForeignKey(() => Post)
+    declare postId: string;
 
 }
 

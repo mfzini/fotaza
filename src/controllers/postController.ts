@@ -6,6 +6,8 @@ import { User } from '../models/User.js';
 import type { UUID } from 'crypto';
 import { sha256 } from '../utils/sha256.js';
 import { sequelize } from '../config/db.js';
+import { Comment } from '../models/Comment.js';
+import { Rating } from '../models/Rating.js';
 
 export async function getCreatePost(req: Request, res: Response, next: NextFunction) {
     res.render('createPost');
@@ -21,55 +23,26 @@ export async function postCreatePost(req: Request, res: Response, next: NextFunc
             title,
             desc
         }, { transaction });
-
-
-        const FilePromises = (req.files as Express.Multer.File[]).map(async (f) => {
+        console.log(post.id)
+        for (let f of req.files as Express.Multer.File[]) {
             const hash = sha256(f.buffer);
-            const url = await upload(f, hash); // esto hay que cambiar para usar promesas.
-            const mimetype: string = f.mimetype;
-
-            if (!url) return next(new Error("Algo malió sal.")); // esto va en otro lado.
-
-            return File.findOrCreate({
-                where: { hash },
-                defaults: { hash, url, mimetype },
-                transaction
-            });
-        });
-
-        const tagPromises = req.body.tags.map(async (tag: string)=> {
-            return Tag.findOrCreate({
-                where: { tag },
-                defaults: { tag },
-                transaction
-            })
-        });
-
-        /* for (let f of req.files as Express.Multer.File[]) {
-            const hash = sha256(f.buffer);
-            const url = await upload(f, hash);
+            const url = await upload(f, hash); // esto va en otro lado. seguramente arriba xd
             const mimetype: string = f.mimetype;
 
             if (!url) return next(new Error("Algo malió sal."));
+            const r = await File.create({
+                hash, url, mimetype, postId: post.id
+            }, { transaction });
+        }
 
-            const [r] = await File.findOrCreate({
-                where: { hash },
-                defaults: { hash, url, mimetype },
-                transaction
-            }); */
-
-        /* for (const tag of req.body.tags) {
+        for (const tag of req.body.tags) {
             const [r] = await Tag.findOrCreate({
                 where: { tag },
                 defaults: { tag },
                 transaction
             });
             await post.$add('tags', r, { transaction });
-        } */
-        const files = await Promise.all(FilePromises);
-        const tags = Promise.all(tagPromises);
-        await post.$add('files', files, { transaction });
-        await post.$add('tags', await tags, { transaction });
+        }
         await transaction.commit();
         res.redirect(`/post/${post.id}`);
     } catch (e) {
@@ -84,4 +57,10 @@ export async function viewPost(req: Request, res: Response, next: NextFunction) 
     const dto = await Post.fetchAllByPk(id);
     if (!dto) res.end();
     res.render('post', dto?.toJSON());
+}
+
+export async function getFiles(req: Request, res: Response, next: NextFunction) {
+    const postId = req.params.id as string;
+    const files = await File.findAll({ where: { postId }, include: [Comment, Rating] });
+    res.json(files.length > 0 ? files : { err: "El post no existe" });
 }

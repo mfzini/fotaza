@@ -14,17 +14,18 @@ export class Comment extends Model<Comment, {}> {
     @Column(DataType.STRING)
     declare text: string;
 
+    @BelongsTo(() => User)
+    declare author: User;
     @ForeignKey(() => User)
     @Column(DataType.UUID)
     declare authorId: string;
 
-    @BelongsTo(() => User)
-    declare author: User;
-
+    @BelongsTo(() => File)
+    declare file: Post;
     @ForeignKey(()=> File)
     @Column(DataType.UUID)
     declare fileId: string;
-    @BelongsTo(() => File)
-    declare file: Post;
+
+    
 
 }
