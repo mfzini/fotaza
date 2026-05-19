@@ -1,7 +1,8 @@
 import express, { Router } from 'express';
-import { makeComment } from '../controllers/commentController.js';
+import { fetchComments, makeComment } from '../controllers/commentController.js';
 
 export const commentsRouter: Router = express.Router();
 
-commentsRouter.route('/comment/:fileId')
+commentsRouter.route('/comments/:fileId')
+    .get(fetchComments)
     .post(makeComment);

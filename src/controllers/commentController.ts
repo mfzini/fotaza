@@ -9,3 +9,9 @@ export async function makeComment(req: Request, res: Response, next: NextFunctio
     const comment = await Comment.create({ authorId, fileId, text });
     res.json(comment.toJSON());
 }
+
+export async function fetchComments(req: Request, res: Response, next: NextFunction) {
+    const fileId = req.params.fileId;
+    const comments = await Comment.findAll({where: {fileId}});
+    res.json(comments);
+}

@@ -13,26 +13,35 @@ block body
         #gallery
             button#btn_p.gbtns(type="button") <
             #mediaContainer
+                each f in files
+                    .media(style='display: none')
+                        if f.mimetype.startsWith('image')
+                            img(src=f.url)
+                        else 
+                            video(src=f.url, controls, muted)
+                        .mediaData(style='display: none')
+                            .fileId #{f.id}
             button#btn_n.gbtns(type="button") >
         form#ratingForm(action="", method="post")
-        .rating
-            input#star5(type="radio" name="rating" value="5")
-            label(for="star5") ★
-            input#star4(type="radio" name="rating" value="4")
-            label(for="star4") ★
-            input#star3(type="radio" name="rating" value="3")
-            label(for="star3") ★
-            input#star2(type="radio" name="rating" value="2")
-            label(for="star2") ★
-            input#star1(type="radio" name="rating" value="1")
-            label(for="star1") ★
+            .rating
+                input#star5(type="radio" name="rating" value="5")
+                label(for="star5") ★
+                input#star4(type="radio" name="rating" value="4")
+                label(for="star4") ★
+                input#star3(type="radio" name="rating" value="3")
+                label(for="star3") ★
+                input#star2(type="radio" name="rating" value="2")
+                label(for="star2") ★
+                input#star1(type="radio" name="rating" value="1")
+                label(for="star1") ★
+        p#promedio
             
         #postContent
             #desc: p #{desc}
             #tags: p tags: 
                 =tags.map(t => t.tag).join(', ')
-        form#postComment(action="", method="post") 
-            textarea(name="text", placeholder='Deja un commentario.') 
+        form#postComment 
+            textarea#comment(name="text", placeholder='Deja un commentario.') 
             button(type="submit") ⮞
         #comments
              

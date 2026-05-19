@@ -9,8 +9,8 @@ html(lang="es")
         header
             nav
                 h1#siteName: a(href="/") Fotaza
-                form#search(action="/search", method="post")
-                    input#searchBar(type="text", name="q", autocomplete='off' ,placeholder='Buscar...')
+                form#searchBar(action="/search", method="post")
+                    input#searchInput(type="text", name="q", autocomplete='off' ,placeholder='Buscar...')
                     button(type="submit") 🔍
                     #searchHelper
                         p 1

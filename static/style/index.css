@@ -4,23 +4,28 @@
     box-sizing: border-box;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
+
 body {
     background-color: #1b1b1e;
 }
+
 header {
     position: sticky;
     top: 0;
     z-index: 1;
 }
 
-a, a:visited {
+a,
+a:visited {
     text-decoration: none;
     color: #ccc;
 }
+
 a:hover {
     cursor: pointer;
     color: #fff;
 }
+
 nav button {
     cursor: pointer;
     background-color: transparent;
@@ -28,9 +33,11 @@ nav button {
     color: #ccc;
     font-size: 1rem;
 }
+
 nav button:hover {
     color: #fff;
 }
+
 nav {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
@@ -41,24 +48,40 @@ nav {
     padding: 0 0.3rem;
     background-color: #252525;
     color: #ccc;
+
+    #searchBar {
+        #searchInput {
+            background-color: #2a2a2a;
+            border: 1px solid #515456;
+            border-radius: 12px;
+            padding: 0.5rem;
+            width: 30rem;
+            color: #ccc;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            outline: 1px solid #ffffff7e;
+        }
+
+        button {
+            margin-left: 0.5rem;
+        }
+    }
+
+    ul {
+        list-style: none;
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        right: 1rem;
+    }
+
+
 }
 
-nav h1 {
-    grid-column: 1;
-}
 
-nav form {
-    grid-column: 2;
-}
 
-nav ul {
-    grid-column: 3;
-    list-style: none;
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-    right: 1rem;
-}
 
 main {
     color: #ccc;
@@ -70,22 +93,10 @@ main {
     height: 1000px;
 }
 
-#searchBar {
-    background-color: #2a2a2a;
-    border: 1px solid #515456;
-    border-radius: 12px;
-    padding: 0.5rem;
-    width: 30rem;
-    color: #ccc;
-}
-#searchBar:focus {
-    outline: none;
-    outline: 1px solid #ffffff7e;
-}
 
-#search button {
-    margin-left: 0.5rem;
-}
+
+
+
 #searchHelper {
     width: 30rem;
     padding: 0.5rem;
