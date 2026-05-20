@@ -1,75 +1,154 @@
-#postForm :is(input, textarea, label) {
-    width: 100%;
-    margin: 8px 0;
-}
-textarea {
-    resize: none;
-}
-#preview {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 0.5rem;
-    width: 100%;
-    margin: 8px 0;
-}
-
-.container {
-    display: inline-block;
-    position: relative;
-    overflow: hidden;
-    height: 8rem;
-}
-
-#preview img,
-video {
-    object-fit: cover;
-    object-position: center;
-    border-radius: 12px;
-    width: 100%;
-    height: 100%;
-}
-
-#upload-btn {
-    display: inline-block;
-    border: 1px solid red;
-    cursor: pointer;
-    position: relative;
-    right: 0;
-}
-
-.upload-btn:hover {
-    background-color: #0056b3;
-}
-
-#files {
+#postForm #files {
     display: none;
 }
 
-.delbtn {
-    position: absolute;
-    right: 2px;
-    top: 2px;
-    color: rgb(250, 75, 75);
-    border-radius: 50%;
-    border: none;
-    height: 1.5rem;
-    width: 1.5rem;
-    background-color: rgba(0, 0, 0, 0.9);
-}
-
-.delbtn:hover {
-    background-color: red;
-    color: white;
-}
-
-
 #postForm {
+    margin-top: 3vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 60rem;
     padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    box-shadow: 0 0 12px black;
+
+    :is(input, textarea, label) {
+        width: 100%;
+        margin: 8px 0;
+    }
+
+    input,
+    textarea {
+        outline: none;
+        background-color: #28282c;
+        border: 1px solid #515456;
+        color: #ccc;
+        border-radius: 6px;
+        padding: 5px;
+
+        &:focus {
+            scale: 1.01;
+            box-shadow: inset 0 0 5px #0860f2, 0 0 15px #0860f2;
+
+        }
+    }
+
+    label {
+        align-self: flex-start;
+        margin-bottom: 2px;
+    }
+
+    #desc {
+        height: 5rem;
+    }
+
+    #add-files-btn {
+        width: auto;
+        align-self: flex-end;
+        padding: 6px;
+        background-color: #1360dbfc;
+        border: 1px solid #1a7ae2a5;
+        border-radius: 12px;
+        box-shadow: 0 0 5px black;
+        transition: all ease-in-out 100ms;
+        cursor: pointer;
+
+        &:hover {
+            scale: 1.05;
+        }
+
+        &:active {
+            scale: 0.9;
+            box-shadow: inset 0 0 10px black;
+        }
+    }
+
+    #submit {
+        margin: 1rem auto;
+        padding: 6px;
+        color: white;
+        font-size: 1rem;
+        background-color: #1360dbfc;
+        border: 1px solid #1a7ae2a5;
+        border-radius: 12px;
+        box-shadow: 0 0 5px black;
+        width: 20%;
+        transition: all ease-in-out 300ms;
+
+        &:hover {
+            scale: 1.1;
+        }
+
+        &:active {
+            scale: 0.9;
+            box-shadow: inset 0 0 10px black;
+        }
+    }
+
+    #preview {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.5rem;
+        width: 100%;
+        margin: 8px 0;
+
+        .container {
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            height: 8rem;
+            border-radius: 12px;
+            box-shadow: 0 0 2px black;
+        }
+
+        img,
+        video {
+            object-fit: cover;
+            object-position: center;
+            border-radius: 12px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .delbtn {
+            position: absolute;
+            right: 2px;
+            top: 2px;
+            color: rgb(250, 75, 75);
+            border-radius: 50%;
+            border: none;
+            height: 1.5rem;
+            width: 1.5rem;
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .delbtn:hover {
+            background-color: red;
+            color: white;
+        }
+
+        .btn-cfg {
+            position: absolute;
+            right: 30px;
+            top: 2px;
+            color: rgb(250, 75, 75);
+            border-radius: 50%;
+            border: none;
+            height: 1.5rem;
+            width: 1.5rem;
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .btn-cfg:hover {
+            background-color: red;
+            color: white;
+        }
+
+    }
+
 }
+
 
 
 .userInput {
@@ -77,12 +156,40 @@ video {
     font-size: 1rem;
 }
 
-#postForm label {
-    align-self: flex-start;
-    margin-bottom: 2px;
+.btn-cfg {
+    anchor-name: --mi-boton-ancla;
 }
 
-#postForm #desc {
-    height: 5rem;
+#config-popover {
+    position: relative;
+    padding: 10px;
+    inset: auto;
+    top: anchor(--boton-activo bottom);
+    left: anchor(--boton-activo left);
+    margin-top: 6px;
+
+    border: 1px solid rgba(75, 73, 73, 0.5);
+    border-radius: 8px;
+    box-shadow: 0 0 20px black;
+    background-color: rgba(44, 44, 44, 0.8);
+    color: #ccc;
+    backdrop-filter: blur(12px);
+
+    #wea {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        input {
+            width: 100%;
+            padding: 5px;
+            border: 1px sold rgba(128, 128, 128, 0.718);
+            border-radius: 6px;
+            outline: none;
+            color: #ccc;
+            background-color: transparent;
+            font-size: 1rem;
+        }
+    }
 
 }

@@ -3,23 +3,28 @@ extends layout
 block head 
     link(rel="stylesheet", href="../style/createPost.css")
     title Publicar
-block body
-    main: form#postForm(action="/post/create", method="post", enctype='multipart/form-data')
+block main
+    form#postForm(action="/post/create", method="post", enctype='multipart/form-data')
         label(for="title") Título
-        input.userInput(type="text", name="title", value=title)
+            input.userInput(type="text", name="title", value=title)
         label(for="desc") Descripción
-        textarea.userInput#desc(name="desc", maxlength='250', rows='3',  value=desc)
+            textarea.userInput#desc(name="desc", maxlength='250', rows='3',  value=desc)
         label(for="tags") Etiquetas
-        input.userInput(type="text", name="tags", value=tags)
-        label#upload-btn(for="files", style="display: 'none'") Seleccionar Archivos
-        input#files(type="file", name="files", accept="image/*,video/*", multiple)
+            input.userInput(type="text", name="tags", value=tags)
+        label#add-files-btn(for="files") Seleccionar Archivos
+            input#files(type="file", name="files", accept="image/*,video/*", multiple, style="display: none")
         #preview
-        
+    
         if err
             ul#err
                 each e in err
                     li=e 
         button#submit(type="submit") Publicar
-    
+
+    #config-popover(popover)
+        #wea
+            #popover-file-name
+            label(for="watermark") Marca de agua: 
+                input#input-watermark(type="text", name="watermark")
 block scripts
     script(src="/script/createPost.js") 

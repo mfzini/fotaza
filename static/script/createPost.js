@@ -1,14 +1,16 @@
 const input = document.getElementById('files');
 const preview = document.getElementById('preview');
 const subitBtn = document.getElementById('submit');
+const popover = document.getElementById('config-popover');
+const form = document.getElementById('postForm');
 const dt = new DataTransfer();
-const hashSet = new Set();
+const hashMap = new Map();
 
-subitBtn.addEventListener('click', (e) => {
-    input.files = dt.files;
-});
+subitBtn.addEventListener('click', submit);
+input.addEventListener('change', cargarArchivos);
+popover.addEventListener('beforetoggle', popoverHook)
 
-input.addEventListener('change', async (event) => {
+async function cargarArchivos(event) {
     event.preventDefault();
     for (const tbu of event.target.files) {
         if (dt.files.length == 10) {
@@ -16,41 +18,44 @@ input.addEventListener('change', async (event) => {
             break;
         }
         const hash = await getHash(tbu);
-        if (hashSet.has(hash))
+        if (hashMap.has(hash)) {
             continue;
-        hashSet.add(hash);
+        }
+        hashMap.set(hash, '');
         dt.items.add(tbu);
-        createPreviewContainer(tbu, hash);
+        const container = createPreviewContainer(tbu, hash);
+        preview.appendChild(container);
     }
-});
-
-function createPreviewContainer(file, hash) {
-    const content = getMediaHTML(file)
-    if (!content) return;
-
-    const container = document.createElement('div');
-    container.classList.add('container');
-    container.appendChild(content);
-
-    const del_btn = document.createElement('button');
-    del_btn.classList.add('delbtn');
-    del_btn.textContent = 'X';
-    del_btn.addEventListener('click', e => {
-        dt.items.remove(file);
-        hashSet.delete(hash);
-        preview.removeChild(container);
-    })
-
-    container.appendChild(del_btn);
-    preview.appendChild(container);
 }
 
-async function getHash(file) {
-    const arrayBuffer = await file.arrayBuffer();
-    const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    return hashHex;
+function createPreviewContainer(file, hash) {
+    const content = getMediaHTML(file);
+    if (!content) return;
+    const container = document.createElement('div');
+
+    const btn_del = createButton('delbtn', 'X', e => {
+        dt.items.remove(file);
+        hashMap.delete(hash);
+        preview.removeChild(container);
+    });
+
+    const btn_cfg = createButton('btn-cfg', 'C', (e) => {
+        document.querySelectorAll('.btn-cfg').forEach(btn => {
+            btn.style.anchorName = 'none';
+        });
+        e.target.style.anchorName = '--boton-activo';
+        popover.dataset.activeFileName = file.name;
+        const file_name = document.getElementById('popover-file-name');
+        if (file_name) file_name.textContent = file.name;
+
+        popover.showPopover();
+    });
+
+    container.classList.add('container');
+    container.appendChild(content);
+    container.appendChild(btn_cfg);
+    container.appendChild(btn_del);
+    return container;
 }
 
 function getMediaHTML(f) {
@@ -67,4 +72,42 @@ function getMediaHTML(f) {
         element.muted = true;
     }
     return element;
+}
+
+function createButton(className, textContent, onclick) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.classList.add(className);
+    btn.textContent = textContent;
+    btn.addEventListener('click', onclick)
+    return btn;
+}
+
+function popoverHook(e) {
+    const input_watermark = document.getElementById('input-watermark');
+    if (e.newState == 'closed') {
+        hashMap.set(e.target.dataset.activeHash, input_watermark.value);
+        input_watermark.value = '';
+    } else {
+        const watermark = hashMap.get(e.target.dataset.activeHash);
+        input_watermark.value = watermark ? watermark : '';
+    }
+}
+
+function submit(e) {
+    const hidden = document.createElement('input');
+    hidden.type = 'text';
+    hidden.style.display = 'none';
+    hidden.name = 'watermarks';
+    hidden.value = JSON.stringify(Object.fromEntries(hashMap));
+    form.appendChild(hidden);
+    input.files = dt.files;
+}
+
+async function getHash(file) {
+    const arrayBuffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
 }

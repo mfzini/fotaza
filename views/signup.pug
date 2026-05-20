@@ -2,7 +2,7 @@ extends layout
 
 block head
     title Registrarse
-block body
+block main
     form(action="/signup", method="post") 
         label(for="username") Nombre:
         input(type="text", name="username" value=(values? values.username:""))

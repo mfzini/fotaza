@@ -20,19 +20,8 @@ import { Comment } from "./Comment.js";
 import { Rating } from "./Rating.js";
 
 @Table
-export class Post extends Model<Post, { authorId: UUID; title: string; desc: string; }> {
-    public static async fetchAllByPk(pk: string) {
-        return Post.findByPk(pk, {
-            include: [User, Tag, {
-                model: File,
-                include: [Rating, {
-                    model: Comment,
-                    include: [User]
-                }]
-            }]
-        });
-    }
-
+export class Post extends Model {
+    
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
@@ -71,6 +60,18 @@ export class Post extends Model<Post, { authorId: UUID; title: string; desc: str
         return Post.findAll({
             include: [{ model: Tag }],
             where: { '$tags.tag$': { [Op.in]: tags } }
+        });
+    }
+
+    public static async fetchAllByPk(pk: string) {
+        return Post.findByPk(pk, {
+            include: [User, Tag, {
+                model: File,
+                include: [Rating, {
+                    model: Comment,
+                    include: [User]
+                }]
+            }]
         });
     }
 }

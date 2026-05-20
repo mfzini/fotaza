@@ -1,9 +1,8 @@
 extends layout 
 block head
     title Perfil de #{profile.username}
-block body
-    main
-        h1#userName #{profile.username}
+block main
+    h1#userName #{profile.username}
 
-        each p in profile.posts
-            p: a(href=`/post/${p.id}`)  #{p.title}
+    each p in profile.posts
+        p: a(href=`/post/${p.id}`)  #{p.title}

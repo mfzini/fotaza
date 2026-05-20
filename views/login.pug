@@ -2,15 +2,18 @@ extends layout
 
 block head
     title Iniciar Sesión
-block body 
-    form(action="/login", method="post") 
-        label(for="email") Email:
-        input(type="email", name="email", value=email)
+    link(rel="stylesheet", href="/style/login.css")
+block main 
+    #container
+        form#loginForm(action="/login", method="post")
+            section 
+                label(for="email") Email:
+                    input(type="email", name="email", value=email)
+            
+                label(for="password") Contraseña:
+                    input(type="password", name="password")
 
-        label(for="password") Contraseña:
-        input(type="password", name="password")
-
-        input(type="submit", value="Iniciar Sesión")
+                button(type="submit") Iniciar Sesión
 
     if err
-        p #{err}
+        #error #{err}

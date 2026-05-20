@@ -6,11 +6,13 @@ import { isAuthenticated } from '../middleware/auth.middleware.js';
 import { userRouter } from './userRouter.js';
 import { ratingsRouter } from './ratingsRouter.js';
 import { commentsRouter } from './commentsRouter.js';
+import { search } from '../controllers/searchController.js';
 
 export const mainRouter: Router = express.Router();
 mainRouter.get('/', getHome);
 mainRouter.use(authRouter);
 mainRouter.use(isAuthenticated, postRouter);
 mainRouter.use(userRouter);
-mainRouter.use(ratingsRouter)
-mainRouter.use(commentsRouter)
+mainRouter.use(ratingsRouter);
+mainRouter.use(commentsRouter);
+mainRouter.post('/search', search);

@@ -72,7 +72,7 @@ async function renderRatings() {
     const ratings = await fetchRatings();
 
     const promedio = ratings.reduce((acc, r) => acc + r.value, 0)/ratings.length;
-    document.getElementById('promedio').innerText = `Promedio: ${promedio}`;
+    document.getElementById('promedio').innerText = `${promedio > 0 ? 'Promedio: '+promedio: ''}`;
 
     const [userRating] = ratings.filter(r => r.userId == userData.id);
     if (!userRating) {
@@ -109,6 +109,9 @@ function getFileId() {
 }
 
 function render() {
+    if (collection.length == 1) {
+        [btn_p, btn_n].forEach(b => b.style.display = 'none');
+    }
     collection[i].style.display = 'flex';
     renderComments();
     renderRatings();

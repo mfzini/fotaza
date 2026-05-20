@@ -8,7 +8,6 @@ import {
     HasMany,
     BelongsTo,
     ForeignKey,
-    BelongsToMany,
 } from "sequelize-typescript";
 import { Post } from "./Post.js";
 import { Comment } from "./Comment.js";
@@ -29,6 +28,9 @@ export class File extends Model {
 
     @Column(DataType.STRING)
     declare mimetype: string;
+
+    @Column(DataType.STRING)
+    declare watermark: string;
 
     @HasMany(() => Rating)
     declare ratings: Rating[];

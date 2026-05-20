@@ -16,6 +16,7 @@ export async function getCreatePost(req: Request, res: Response, next: NextFunct
 export async function postCreatePost(req: Request, res: Response, next: NextFunction) {
     const authorId: UUID = (req.user as User).id as UUID;
     const { title, desc } = req.body;
+    const watermarks = new Map(Object.entries(JSON.parse(req.body.watermarks)));
     const transaction = await sequelize.transaction();
     try {
         const post = await Post.create({
@@ -23,15 +24,14 @@ export async function postCreatePost(req: Request, res: Response, next: NextFunc
             title,
             desc
         }, { transaction });
-        console.log(post.id)
         for (let f of req.files as Express.Multer.File[]) {
             const hash = sha256(f.buffer);
-            const url = await upload(f, hash); // esto va en otro lado. seguramente arriba xd
+            const url = await upload(f, hash);
             const mimetype: string = f.mimetype;
-
             if (!url) return next(new Error("Algo malió sal."));
+            const watermark = watermarks.get(f.originalname);
             const r = await File.create({
-                hash, url, mimetype, postId: post.id
+                hash, url, mimetype, watermark, postId: post.id
             }, { transaction });
         }
 

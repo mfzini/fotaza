@@ -11,11 +11,18 @@ html(lang="es")
                 h1#siteName: a(href="/") Fotaza
                 form#searchBar(action="/search", method="post")
                     input#searchInput(type="text", name="q", autocomplete='off' ,placeholder='Buscar...')
-                    button(type="submit") 🔍
+                    button#glass(type="submit") 🔍
                     #searchHelper
-                        p 1
-                        p 2
-                        p 3
+                        .searchOption
+                            label(for="optionTags") Tags
+                            input#optionTags(type="radio", name="option", value='tags', checked)
+                        .searchOption
+                            label(for="optionUsername") Usuario
+                            input#optionUsername(type="radio", name="option" value='username')
+                        .searchOption
+                            label(for="optionTitle") Título
+                            input#optionTitle(type="radio", name="option", value='title')
+                            
                 ul
                     if user
                         li: a(href='/post/create') Publicar
@@ -24,8 +31,8 @@ html(lang="es")
                     else
                         li: a(href="/login") Iniciar Sesión
                         li: a(href="/signup") Crear Cuenta
-
-    block body
+        main
+            block main
     block scripts
-        script(src="/script/index.js")
-#userData(style="display:none")= `${JSON.stringify(user)}`
+    script(src="/script/index.js")
+    #userData(style="display:none")= `${JSON.stringify(user)}`
