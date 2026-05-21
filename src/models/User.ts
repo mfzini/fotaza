@@ -17,7 +17,7 @@ import { Comment } from "./Comment.js";
 import { Rating } from "./Rating.js";
 
 @Table({ paranoid: true })
-export class User extends Model<User, { username: string; email: string; password: string; }> {
+export class User extends Model {
 
     @PrimaryKey
     @Default(DataType.UUIDV4)

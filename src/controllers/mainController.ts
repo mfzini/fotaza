@@ -1,17 +1,34 @@
 import type { NextFunction, Request, Response } from "express";
 import { User } from "../models/User.js";
 import { Post, Tag } from "../models/Post.js";
+import { File } from '../models/File.js'
+import { col, fn } from "sequelize";
+import { Rating } from "../models/Rating.js";
 
 export async function getHome(req: Request, res: Response) {
-    const posts = await Post.findAll({
-        limit: 10,
+    const recientes = await Post.findAll({
+        limit: 20,
         order: [['createdAt', 'DESC']],
-        include: [
-            { model: User, as: 'author' },
-            { model: Tag }                 
-        ]
+        include: [User, Tag, File]
     });
-    res.render('index', posts)
+
+    const top = await Post.findAll({
+            subQuery: false, 
+            group: ['Post.id'],
+            order: [[fn('COUNT', col('files.ratings.userId')), 'DESC']],
+            include: [{
+                model: File,
+                attributes: [], 
+                required: true, 
+                include: [{
+                    model: Rating,
+                    attributes: [], 
+                    required: true  
+                }]
+            }],
+            limit: 5
+        });
+    res.render('index', { recientes, top })
 }
 
 export async function catchAll(err: any, req: Request, res: Response, next: NextFunction) {

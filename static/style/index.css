@@ -17,7 +17,6 @@ a:hover {
 }
 
 body {
-
     background-color: #1d1d20;
 
     header {
@@ -118,7 +117,6 @@ body {
         display: flex;
         align-items: center;
         flex-direction: column;
-        margin: 0 auto;
         min-height: 94vh;
     }
 

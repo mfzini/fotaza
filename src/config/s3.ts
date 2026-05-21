@@ -12,7 +12,7 @@ const client = new S3Client({
 })
 const prefix = process.env.S3_BUCKET!;
 
-export async function upload(file: any, hash: string) {
+export async function upload(file: Express.Multer.File, hash: string) {
     const name: string = `${hash}.${file.mimetype.split('/')[1]}`
     const location: string = `${prefix}/${name}`
     let result = await checkFile('fotaza', name);

@@ -4,24 +4,26 @@ block head
     link(rel="stylesheet", href="/style/viewPost.css")
     title #{title} - Fotaza
 block main
-    main
-        #postHeader
-            h1#title #{title}
-            #postData Publicado por: 
-                a(href=`/profile/${author.id}`) #{`${author.username}`}
-                span #{` el ${new Date(createdAt).toLocaleDateString('es-AR')}`}
-        #gallery
-            button#btn_p.gbtns(type="button") <
-            #mediaContainer
-                each f in files
-                    .media(style='display: none')
-                        if f.mimetype.startsWith('image')
-                            img(src=f.url)
-                        else 
-                            video(src=f.url, controls, muted)
-                        .mediaData(style='display: none')
-                            .fileId #{f.id}
-            button#btn_n.gbtns(type="button") >
+    #postHeader
+        h1#title #{title}
+        #postData Publicado por: 
+            a(href=`/profile/${author.id}`) #{`${author.username}`}
+            span #{` el ${new Date(createdAt).toLocaleDateString('es-AR')}`}
+    #gallery
+        button#btn_p.gbtns(type="button") <
+        #mediaContainer
+            each f in files
+                if !user && f.watermark
+                    continue
+                .media(style='display: none')
+                    if f.mimetype.startsWith('image')
+                        img(src=f.url)
+                    else 
+                        video(src=f.url, controls, muted)
+                    .mediaData(style='display: none')
+                        .fileId #{f.id}
+        button#btn_n.gbtns(type="button") >
+    if user
         form#ratingForm(action="", method="post")
             .rating
                 input#star5(type="radio" name="rating" value="5")
@@ -34,17 +36,18 @@ block main
                 label(for="star2") ★
                 input#star1(type="radio" name="rating" value="1")
                 label(for="star1") ★
-        p#promedio
-            
-        #postContent
-            #desc: p #{desc}
-            #tags: p tags: 
-                =tags.map(t => t.tag).join(', ')
+    p#promedio
+        
+    #postContent
+        #desc: p #{desc}
+        #tags: p tags: 
+            =tags.map(t => t.tag).join(', ')
+    if user
         form#postComment 
             textarea#comment(name="text", placeholder='Deja un commentario.') 
             button(type="submit") ⮞
-        #comments
-             
+    #comments
+            
 
     script(type='module', src="/script/viewPost.js") 
         

@@ -60,11 +60,9 @@ stars.forEach(s => s.addEventListener('click', async event => {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            fileId,
             value
         })
     });
-    console.log(res.status)
     renderRatings();
 }));
 

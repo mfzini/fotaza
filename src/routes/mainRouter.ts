@@ -11,7 +11,7 @@ import { search } from '../controllers/searchController.js';
 export const mainRouter: Router = express.Router();
 mainRouter.get('/', getHome);
 mainRouter.use(authRouter);
-mainRouter.use(isAuthenticated, postRouter);
+mainRouter.use(postRouter);
 mainRouter.use(userRouter);
 mainRouter.use(ratingsRouter);
 mainRouter.use(commentsRouter);

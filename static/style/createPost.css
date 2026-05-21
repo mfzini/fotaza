@@ -49,18 +49,13 @@
         padding: 6px;
         background-color: #1360dbfc;
         border: 1px solid #1a7ae2a5;
-        border-radius: 12px;
+        border-radius: 6px;
         box-shadow: 0 0 5px black;
-        transition: all ease-in-out 100ms;
+        
         cursor: pointer;
 
         &:hover {
             scale: 1.05;
-        }
-
-        &:active {
-            scale: 0.9;
-            box-shadow: inset 0 0 10px black;
         }
     }
 
@@ -71,7 +66,7 @@
         font-size: 1rem;
         background-color: #1360dbfc;
         border: 1px solid #1a7ae2a5;
-        border-radius: 12px;
+        border-radius: 6px;
         box-shadow: 0 0 5px black;
         width: 20%;
         transition: all ease-in-out 300ms;
@@ -98,7 +93,7 @@
             position: relative;
             overflow: hidden;
             height: 8rem;
-            border-radius: 12px;
+            border-radius: 6px;
             box-shadow: 0 0 2px black;
         }
 
@@ -106,7 +101,7 @@
         video {
             object-fit: cover;
             object-position: center;
-            border-radius: 12px;
+            border-radius: 6px;
             width: 100%;
             height: 100%;
         }

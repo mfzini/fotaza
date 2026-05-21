@@ -38,10 +38,12 @@ export class File extends Model {
     @HasMany(() => Comment)
     declare comments: Comment[];
 
-    @BelongsTo(() => Post)
-    declare posts: Post[];
     @ForeignKey(() => Post)
     declare postId: string;
+    @BelongsTo(() => Post)
+    declare post: Post;
+
+    
 
 }
 

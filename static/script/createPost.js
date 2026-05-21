@@ -4,26 +4,26 @@ const subitBtn = document.getElementById('submit');
 const popover = document.getElementById('config-popover');
 const form = document.getElementById('postForm');
 const dt = new DataTransfer();
-const hashMap = new Map();
+const watermarks = new Map();
 
 subitBtn.addEventListener('click', submit);
 input.addEventListener('change', cargarArchivos);
-popover.addEventListener('beforetoggle', popoverHook)
+popover.addEventListener('beforetoggle', popoverHook);
 
 async function cargarArchivos(event) {
     event.preventDefault();
-    for (const tbu of event.target.files) {
+    for (const file of event.target.files) {
         if (dt.files.length == 10) {
             alert('Máximo 10 archivos.');
             break;
         }
-        const hash = await getHash(tbu);
-        if (hashMap.has(hash)) {
+        const hash = await getHash(file);
+        if (watermarks.has(hash)) {
             continue;
         }
-        hashMap.set(hash, '');
-        dt.items.add(tbu);
-        const container = createPreviewContainer(tbu, hash);
+        watermarks.set(hash, '');
+        dt.items.add(file);
+        const container = createPreviewContainer(file, hash);
         preview.appendChild(container);
     }
 }
@@ -35,7 +35,7 @@ function createPreviewContainer(file, hash) {
 
     const btn_del = createButton('delbtn', 'X', e => {
         dt.items.remove(file);
-        hashMap.delete(hash);
+        watermarks.delete(hash);
         preview.removeChild(container);
     });
 
@@ -43,11 +43,13 @@ function createPreviewContainer(file, hash) {
         document.querySelectorAll('.btn-cfg').forEach(btn => {
             btn.style.anchorName = 'none';
         });
-        e.target.style.anchorName = '--boton-activo';
+
         popover.dataset.activeFileName = file.name;
+        popover.dataset.activeHash = hash;
         const file_name = document.getElementById('popover-file-name');
         if (file_name) file_name.textContent = file.name;
 
+        e.target.style.anchorName = '--boton-activo';
         popover.showPopover();
     });
 
@@ -86,10 +88,10 @@ function createButton(className, textContent, onclick) {
 function popoverHook(e) {
     const input_watermark = document.getElementById('input-watermark');
     if (e.newState == 'closed') {
-        hashMap.set(e.target.dataset.activeHash, input_watermark.value);
+        watermarks.set(e.target.dataset.activeHash, input_watermark.value);
         input_watermark.value = '';
     } else {
-        const watermark = hashMap.get(e.target.dataset.activeHash);
+        const watermark = watermarks.get(e.target.dataset.activeHash);
         input_watermark.value = watermark ? watermark : '';
     }
 }
@@ -99,7 +101,7 @@ function submit(e) {
     hidden.type = 'text';
     hidden.style.display = 'none';
     hidden.name = 'watermarks';
-    hidden.value = JSON.stringify(Object.fromEntries(hashMap));
+    hidden.value = JSON.stringify(Object.fromEntries(watermarks));
     form.appendChild(hidden);
     input.files = dt.files;
 }

@@ -54,13 +54,6 @@ export async function postCreatePost(req: Request, res: Response, next: NextFunc
 
 export async function viewPost(req: Request, res: Response, next: NextFunction) {
     const id: string = req.params.id as string;
-    const dto = await Post.fetchAllByPk(id);
-    if (!dto) res.end();
-    res.render('post', dto?.toJSON());
-}
-
-export async function getFiles(req: Request, res: Response, next: NextFunction) {
-    const postId = req.params.id as string;
-    const files = await File.findAll({ where: { postId }, include: [Comment, Rating] });
-    res.json(files.length > 0 ? files : { err: "El post no existe" });
+    let posts = await Post.fetchAllByPk(id);
+    return res.render('post', posts?.toJSON());
 }

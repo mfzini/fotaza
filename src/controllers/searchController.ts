@@ -2,11 +2,13 @@ import type { Request, Response, NextFunction } from "express"
 import { User } from "../models/User.js";
 import { Post, Tag } from "../models/Post.js";
 import { Op } from "sequelize";
+import { normalizeStr } from "../utils/strUtils.js";
 
 export async function search(req: Request, res: Response, next: NextFunction) {
-    const { option, q } = req.body;
+    const { option } = req.body;
+    const q = normalizeStr(req.body.q);
     if (!q) {
-        res.json({ msg: 'vo so o te hace?' })
+        return res.redirect('/');
     };
     let resultados;
     switch (option) {

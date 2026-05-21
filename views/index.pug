@@ -3,3 +3,11 @@ extends layout
 block head 
     title Fotaza 
 block main
+    #principal
+        #recientes
+            each p in recientes
+                p: a(href=`/post/${p.id}`)  #{p.title}
+
+        aside#valorados 
+            each p in top
+                p: a(href=`/post/${p.id}`)  #{p.title}
