@@ -11,7 +11,7 @@ import { setUserContext } from '../middleware/setUserContext.js';
 export const server = express();
 const [storageDomain] = process.env.S3_BUCKET!.split('/storage');
 const mediaDirectives = ["'self'", "data:", "blob:", storageDomain ?? '']
-/* server.use(helmet({
+server.use(helmet({
     contentSecurityPolicy: {
         directives: {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
@@ -19,7 +19,7 @@ const mediaDirectives = ["'self'", "data:", "blob:", storageDomain ?? '']
             'media-src': mediaDirectives,
         }
     }
-})); */
+}));
 
 server.use(session({
     name: 'jwt',

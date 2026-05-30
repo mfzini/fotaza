@@ -74,17 +74,22 @@ main {
 }
 
 #postContent {
-    width: 100%;
-    padding: 0.5rem;
+    width: 60%;
+    padding: 1rem;
 
     #tags {
         text-align: right;
     }
 }
-
+#commentsBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 60%;
+}
 #postComment {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     width: 98%;
     background-color: rgba(127, 127, 127, 0.03);
     border: 1px solid rgb(255, 255, 255, 0.2);
@@ -92,7 +97,7 @@ main {
     margin: 5px auto;
 
     textarea {
-        width: 98%;
+        width: 100%;
         resize: none;
         background-color: transparent;
         text-align: justify;
@@ -108,9 +113,7 @@ main {
     }
 
     button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+
         padding: 0.5rem;
         background-color: rgba(255, 255, 255, 0.12);
         border-radius: 0 12px 12px 0;
@@ -138,6 +141,14 @@ main {
         border-radius: 12px;
         padding: 10px;
         margin: 8px auto;
+        .commentHeader {
+            display: flex;
+            justify-content: space-between;
+            .date {
+                text-align: end;
+            }
+            border-bottom: 1px dashed gray;
+        }
     }
 
 }

@@ -1,0 +1,20 @@
+extends layout 
+include mixins/postCard
+
+block main 
+    #resultados
+        h2 Resultados de la busqueda:
+
+        if (resultados.length == 0) 
+            h1 No hay resultados!
+
+        if (option == 'username')
+            each u in resultados
+                .userCard
+                    a(href=`/profile/${u.id}`): h3 #{u.username}
+        else
+            each p in resultados
+                +postCard(p)
+        
+        
+        

@@ -1,13 +1,16 @@
 extends layout
+include mixins/postCard
 
 block head 
     title Fotaza 
 block main
     #principal
         #recientes
+            h3 Recientes
             each p in recientes
-                p: a(href=`/post/${p.id}`)  #{p.title}
+                +postCard(p)
 
         aside#valorados 
+            h3 Más votados
             each p in top
-                p: a(href=`/post/${p.id}`)  #{p.title}
+                +postCard(p)

@@ -10,6 +10,7 @@ import {
     Validate,
     BeforeSave,
     HasMany,
+    ForeignKey,
 } from "sequelize-typescript";
 import bcrypt from 'bcrypt';
 import { Post } from "./Post.js";
@@ -65,6 +66,9 @@ export class User extends Model {
     @HasMany(() => Rating)
     declare ratings: Rating[];
 
+    @HasMany(() => Follow)
+    declare following: Follow[];
+
     @BeforeSave
     static async hashPassword(user: User) {
         if (!user.changed('password')) return;
@@ -74,4 +78,17 @@ export class User extends Model {
     async comparePassword(password: string) {
         return bcrypt.compare(password, this.password);
     }
+}
+
+@Table
+export class Follow extends Model {
+    @PrimaryKey
+    @ForeignKey(() => User)
+    @Column(DataType.UUID)
+    declare user: User;
+
+    @PrimaryKey
+    @ForeignKey(() => User)
+    @Column(DataType.UUID)
+    declare target: User;
 }

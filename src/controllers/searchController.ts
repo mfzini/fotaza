@@ -13,7 +13,7 @@ export async function search(req: Request, res: Response, next: NextFunction) {
     let resultados;
     switch (option) {
         case 'tags':
-            resultados = Post.findAll({
+            resultados = await Post.findAll({
                 include: [{
                     model: Tag,
                     where: {
@@ -28,24 +28,25 @@ export async function search(req: Request, res: Response, next: NextFunction) {
             })
             break;
         case 'username':
-            resultados = User.findAll({
+            resultados = await User.findAll({
                 where: {
                     username: {
                         [Op.like]: `%${q}%`
                     }
-                }
+                },
+                attributes: ['id', 'username']
             });
             break;
         case 'title':
-            resultados = Post.findAll({
+            resultados = await Post.findAll({
                 where: {
                     title: {
                         [Op.like]: `%${q}%`
                     }
-                }
+                },
+                include: [Tag]
             })
             break;
     }
-
-    res.json(await resultados);
+    res.render('search', {resultados, option});
 }

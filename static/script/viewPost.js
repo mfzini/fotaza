@@ -6,6 +6,7 @@ const commentsContainer = document.getElementById('comments');
 const commentForm = document.getElementById('postComment');
 const stars = [...document.getElementsByName('rating')];
 const collection = [...document.getElementById('mediaContainer').children];
+
 let i = 0;
 render();
 
@@ -46,7 +47,7 @@ commentForm.addEventListener('submit', async event => {
             fileId,
             text
         })
-    }).then(r => r.json());
+    });
     textarea.value = '';
     render();
 });
@@ -69,10 +70,10 @@ stars.forEach(s => s.addEventListener('click', async event => {
 async function renderRatings() {
     const ratings = await fetchRatings();
 
-    const promedio = ratings.reduce((acc, r) => acc + r.value, 0)/ratings.length;
-    document.getElementById('promedio').innerText = `${promedio > 0 ? 'Promedio: '+promedio: ''}`;
+    const promedio = ratings.reduce((acc, r) => acc + r.value, 0) / ratings.length;
+    document.getElementById('promedio').innerText = `${promedio > 0 ? 'Promedio: ' + promedio : ''}`;
 
-    const [userRating] = ratings.filter(r => r.userId == userData.id);
+    const [userRating] = ratings.filter(r => r.userId == userId);
     if (!userRating) {
         stars.forEach(s => s.checked = false);
         return;
@@ -87,12 +88,16 @@ function renderComments() {
             .then(comments => {
                 commentsContainer.innerHTML = comments.map(comment => `
                     <div class='comment'>
-                        <div class='author'>
-                            ${comment.authorId}
-                        </div class='text'><div>
+                        <div class='commentHeader'>
+                            <div class='author'>
+                                ${comment.author.username}
+                            </div>
+                            <div class='date'>
+                                ${new Date(comment.createdAt).toLocaleString('es-AR')}
+                            </div>
+                        </div>
+                         <div class='text'>
                             ${comment.text}
-                        </div><div class='date'>
-                            ${comment.createdAt}
                         </div>
                     </div>
                 `).join('');
@@ -103,7 +108,7 @@ async function fetchRatings() {
     return fetch(`/ratings/${getFileId()}`).then(r => r.json());
 }
 function getFileId() {
-    return collection[i].lastChild.innerText;
+    return collection[i].dataset.fileId
 }
 
 function render() {

@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { getProfile } from "../controllers/userController.js";
+import { follow, getProfile } from "../controllers/userController.js";
 
 export const userRouter = Router();
 
 userRouter.get(['/profile', '/profile/:id'], getProfile);
+userRouter.post('/follow/:id', follow)

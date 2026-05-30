@@ -1,0 +1,14 @@
+mixin postCard(p)
+    .postCard
+        .postCardHeader
+            a(href=`/post/${p.id}`)
+                h4= p.title
+            .postCardCreatedAt: span= new Date(p.createdAt).toLocaleString('es-AR')
+        .postCardFooter
+            if p.author
+                .postCardAuthor: span Publicado por: 
+                    a(href=`/profile/${p.author.id}`)= p.author.username
+        .postTags
+            span tags: 
+                each tag in p.tags
+                    span #{tag.tag} 

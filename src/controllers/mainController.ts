@@ -13,21 +13,22 @@ export async function getHome(req: Request, res: Response) {
     });
 
     const top = await Post.findAll({
-            subQuery: false, 
-            group: ['Post.id'],
-            order: [[fn('COUNT', col('files.ratings.userId')), 'DESC']],
+        subQuery: false,
+        include: [User, Tag, {
+            model: File,
+            attributes: [],
+            required: true,
             include: [{
-                model: File,
-                attributes: [], 
-                required: true, 
-                include: [{
-                    model: Rating,
-                    attributes: [], 
-                    required: true  
-                }]
-            }],
-            limit: 5
-        });
+                model: Rating,
+                attributes: [],
+                required: true
+            }]
+        }],
+        group: ['Post.id', 'author.id', 'tags.tag',
+            'tags->PostTags.postId', 'tags->PostTags.tag'],
+        order: [[fn('COUNT', col('files.ratings.userId')), 'DESC']],
+        limit: 5
+    });
     res.render('index', { recientes, top })
 }
 

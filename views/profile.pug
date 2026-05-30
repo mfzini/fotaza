@@ -1,12 +1,20 @@
-extends layout 
+extends layout
+include mixins/postCard
 block head
     title Perfil de #{profile.username}
 block main
     #profileHeader 
         h1#userName #{profile.username}
-        if (user)
-            button(type="button") Seguir
-    
+        if (user && !isOwn)
+            button#FollowBtn(type="button") #{`${isFollowing ? 'Dejar de seguir' : 'Seguir'}`}
+    #principal
+        #recientes
+            h3 Recientes
+            each p in recientes
+                +postCard(p)
 
-    each p in profile.posts
-        p: a(href=`/post/${p.id}`)  #{p.title}
+        aside#valorados 
+            h3 Más votados
+            each p in votados
+                +postCard(p)
+    #profileId(style='display: none') #{profile.id}

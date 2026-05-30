@@ -8,20 +8,21 @@ block main
         h1#title #{title}
         #postData Publicado por: 
             a(href=`/profile/${author.id}`) #{`${author.username}`}
-            span #{` el ${new Date(createdAt).toLocaleDateString('es-AR')}`}
+            span #{` el ${new Date(createdAt).toLocaleString('es-AR')}`}
     #gallery
         button#btn_p.gbtns(type="button") <
         #mediaContainer
             each f in files
                 if !user && f.watermark
-                    continue
-                .media(style='display: none')
+                    .media(style='display: none', data-file-id=`${f.id}`)
+                        h2 Este archivo está protegido.
+                        h2 Inicia sesión para visualizarlo!
+                    -continue
+                .media(style='display: none', data-file-id=`${f.id}`)
                     if f.mimetype.startsWith('image')
                         img(src=f.url)
                     else 
                         video(src=f.url, controls, muted)
-                    .mediaData(style='display: none')
-                        .fileId #{f.id}
         button#btn_n.gbtns(type="button") >
     if user
         form#ratingForm(action="", method="post")
@@ -42,11 +43,12 @@ block main
         #desc: p #{desc}
         #tags: p tags: 
             =tags.map(t => t.tag).join(', ')
-    if user
-        form#postComment 
-            textarea#comment(name="text", placeholder='Deja un commentario.') 
-            button(type="submit") ⮞
-    #comments
+    #commentsBox
+        if user
+            form#postComment 
+                textarea#comment(name="text", placeholder='Deja un commentario.') 
+                button(type="submit") ⮞
+        #comments
             
 
     script(type='module', src="/script/viewPost.js") 

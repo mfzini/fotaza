@@ -21,7 +21,7 @@ export class Comment extends Model<Comment, {}> {
     declare authorId: string;
 
     @BelongsTo(() => File)
-    declare file: Post;
+    declare file: File;
     @ForeignKey(()=> File)
     @Column(DataType.UUID)
     declare fileId: string;

@@ -7,7 +7,7 @@ html(lang="es")
         block head
     body
         header
-            nav
+            nav(data-user-id=(user ? user.id : ''))
                 h1#siteName: a(href="/") Fotaza
                 form#searchBar(action="/search", method="post")
                     input#searchInput(type="text", name="q", autocomplete='off' ,placeholder='Buscar...')
@@ -35,4 +35,3 @@ html(lang="es")
             block main
     block scripts
     script(src="/script/index.js")
-    #userData(style="display:none")= `${JSON.stringify(user)}`

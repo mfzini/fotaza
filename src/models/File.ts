@@ -15,6 +15,7 @@ import { Rating } from "./Rating.js";
 
 @Table({ paranoid: true, })
 export class File extends Model {
+    
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
@@ -42,8 +43,5 @@ export class File extends Model {
     declare postId: string;
     @BelongsTo(() => Post)
     declare post: Post;
-
-    
-
 }
 
