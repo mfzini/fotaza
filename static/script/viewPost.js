@@ -27,12 +27,15 @@ render();
     })
 });
 
-document.getElementById('comment').addEventListener('keypress', e => {
-    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
-        event.preventDefault();
-        commentForm.dispatchEvent(new Event('submit', { cancelable: true }));
-    }
-});
+const comment = document.getElementById('comment');
+if (comment) {
+    comment.addEventListener('keypress', e => {
+        if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+            event.preventDefault();
+            commentForm.dispatchEvent(new Event('submit', { cancelable: true }));
+        }
+    });
+}
 commentForm.addEventListener('submit', async event => {
     event.preventDefault();
     const textarea = document.getElementById('comment');
