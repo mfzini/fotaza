@@ -11,7 +11,7 @@ server.listen(PORT, async (err) => {
       process.exit(1);
     }
   } else {
-    if (!production) await sequelize.sync({ alter: true });
+    await sequelize.sync({ alter: true });
     console.log(production? "Up and runnig!" : `http://localhost:${PORT}`);
   }
   
