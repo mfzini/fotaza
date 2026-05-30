@@ -36,7 +36,8 @@ if (comment) {
         }
     });
 }
-commentForm.addEventListener('submit', async event => {
+if (commentForm) {
+    commentForm.addEventListener('submit', async event => {
     event.preventDefault();
     const textarea = document.getElementById('comment');
     const text = textarea.value;
@@ -54,6 +55,7 @@ commentForm.addEventListener('submit', async event => {
     textarea.value = '';
     render();
 });
+}
 
 stars.forEach(s => s.addEventListener('click', async event => {
     const value = event.target.value;
