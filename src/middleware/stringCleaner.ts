@@ -36,4 +36,9 @@ export async function sCleaner(req: Request, res: Response, next: NextFunction) 
             return next(new Error('equis de'));
         req.body.tags = clean(req.body.tags).split(/[,;]/);
     }
+    if (req.body.q) {
+        if (typeof req.body.q !== 'string')
+            return next(new Error('equis de'));
+        req.body.q = clean(req.body.q);
+    }
 }

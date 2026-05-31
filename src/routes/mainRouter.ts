@@ -2,11 +2,11 @@ import express, { Router } from 'express';
 import { getHome } from '../controllers/mainController.js';
 import { authRouter } from './authRouter.js';
 import { postRouter } from './postRouter.js';
-import { isAuthenticated } from '../middleware/auth.middleware.js';
 import { userRouter } from './userRouter.js';
 import { ratingsRouter } from './ratingsRouter.js';
 import { commentsRouter } from './commentsRouter.js';
 import { search } from '../controllers/searchController.js';
+import { sCleaner } from '../middleware/stringCleaner.js';
 
 export const mainRouter: Router = express.Router();
 mainRouter.get('/', getHome);
@@ -15,4 +15,4 @@ mainRouter.use(postRouter);
 mainRouter.use(userRouter);
 mainRouter.use(ratingsRouter);
 mainRouter.use(commentsRouter);
-mainRouter.post('/search', search);
+mainRouter.post('/search', sCleaner, search);
