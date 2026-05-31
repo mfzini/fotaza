@@ -41,4 +41,5 @@ export async function sCleaner(req: Request, res: Response, next: NextFunction) 
             return next(new Error('equis de'));
         req.body.q = clean(req.body.q);
     }
+    next();
 }

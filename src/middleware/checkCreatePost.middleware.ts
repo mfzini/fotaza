@@ -11,7 +11,7 @@ const MAGIC_NUMBERS = {
 
 const magicCheck = (b: Buffer) => {
     const bufferHeader = b.subarray(0, 8);
-    const hex = bufferHeader.toHex();
+    const hex = bufferHeader.toString('hex');
     let esValido = false;
     if (hex.startsWith(MAGIC_NUMBERS.jpg) ||
         hex.startsWith(MAGIC_NUMBERS.png) ||
@@ -30,9 +30,9 @@ export async function checkCreatePost(req: Request, res: Response, next: NextFun
 
     if (files.filter(f => {
         return !magicCheck(f.buffer) && !/(image|video)/.test(f.mimetype);
-    }).length > 0)
+    }).length > 0) {
         err.push('Solo se admiten imágenes y videos.')
-
+    }
     if (!title) err.push('El título es obligatorio.');
 
     if (desc.length > 250) err.push('La descripción admite un máximo de 250 caracteres.');
