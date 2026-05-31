@@ -29,7 +29,7 @@ export async function checkCreatePost(req: Request, res: Response, next: NextFun
     const err: string[] = [];
 
     if (files.filter(f => {
-        return !magicCheck(f.buffer) && !/(image|video)/.test(f.mimetype);
+        return !magicCheck(f.buffer) || !/(image|video)/.test(f.mimetype);
     }).length > 0) {
         err.push('Solo se admiten imágenes y videos.')
     }

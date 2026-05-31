@@ -15,7 +15,6 @@ export async function postCreatePost(req: Request, res: Response, next: NextFunc
     const authorId: UUID = (req.user as User).id as UUID;
     const { title, desc } = req.body;
     const watermarks = new Map(Object.entries(JSON.parse(req.body.watermarks)));
-    console.log(watermarks)
     const transaction = await sequelize.transaction();
     try {
         const post = await Post.create({
@@ -29,7 +28,6 @@ export async function postCreatePost(req: Request, res: Response, next: NextFunc
             const mimetype: string = f.mimetype;
             if (!url) return next(new Error("Algo malió sal."));
             const watermark = watermarks.get(hash);
-            console.log(watermark)
             const r = await File.create({
                 hash, url, mimetype, watermark, postId: post.id
             }, { transaction });
