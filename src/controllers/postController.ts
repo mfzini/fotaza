@@ -6,8 +6,6 @@ import { User } from '../models/User.js';
 import type { UUID } from 'crypto';
 import { sha256 } from '../utils/sha256.js';
 import { sequelize } from '../config/db.js';
-import { Comment } from '../models/Comment.js';
-import { Rating } from '../models/Rating.js';
 
 export async function getCreatePost(req: Request, res: Response, next: NextFunction) {
     res.render('createPost');

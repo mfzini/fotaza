@@ -5,7 +5,14 @@ import { User } from "../models/User.js";
 export async function makeComment(req: Request, res: Response, next: NextFunction) {
     const authorId = (req.user as User).id;
     const fileId = req.params.fileId as string;
-    const { text } = req.body;
+    let { text } = req.body;
+    text = text.trim()                          
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;')
+        .replace(/\//g, '&#x2F;');
     const comment = await Comment.create({ authorId, fileId, text });
     res.json(comment.toJSON());
 }
