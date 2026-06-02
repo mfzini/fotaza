@@ -28,7 +28,7 @@ server.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false,
+        secure: process.env.NODE_ENV == 'production',
         sameSite: 'lax',
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24

@@ -6,7 +6,7 @@
     min-height: 54vh;
 }
 
-#loginForm {
+#loginForm, #signUpForm {
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -8,10 +8,10 @@ block main
         form#loginForm(action="/login", method="post")
             section 
                 label(for="email") Email:
-                    input(type="email", name="email", value=email)
+                    input(type="email", name="email", value=email required)
             
                 label(for="password") Contraseña:
-                    input(type="password", name="password")
+                    input(type="password", name="password" required)
 
                 button(type="submit") Iniciar Sesión
 

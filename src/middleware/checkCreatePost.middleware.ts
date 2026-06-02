@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
-
+import { normalize } from '../utils/sCleaner.js';
 
 const MAGIC_NUMBERS = {
     jpg: 'ffd8ff',
@@ -24,24 +24,27 @@ const magicCheck = (b: Buffer) => {
 }
 
 export async function checkCreatePost(req: Request, res: Response, next: NextFunction) {
-    const { title, desc, tags } = req.body;
+    req.body.title = normalize(req.body.title);
+    req.body.desc = normalize(req.body.desc);
+    req.body.tags = normalize(req.body.tags).split(/[,;]/);
+
     const files = req.files as Express.Multer.File[];
     const err: string[] = [];
-
     if (files.filter(f => {
         return !magicCheck(f.buffer) || !/(image|video)/.test(f.mimetype);
     }).length > 0) {
         err.push('Solo se admiten imágenes y videos.')
     }
-    if (!title) err.push('El título es obligatorio.');
+    if (!req.body.title) err.push('El título es obligatorio.');
 
-    if (desc.length > 250) err.push('La descripción admite un máximo de 250 caracteres.');
+    if (req.body.desc.length > 250) err.push('La descripción admite un máximo de 250 caracteres.');
 
-    if (tags.length == 0) err.push('Se requiere como mínimo una etiqueta.');
+    if (req.body.tags.length == 0) err.push('Se requiere como mínimo una etiqueta.');
 
     if (req.files?.length == 0) err.push('La publicación requiere mínimo un archivo.');
 
     if (err.length > 0)
-        return res.render('createPost', { err, title, desc, tags: tags.toString() });
+        return res.render('createPost', { err, title: req.body.title, desc: req.body.desc, tags: req.body.tags.tags.toString() });
+
     next();
 }

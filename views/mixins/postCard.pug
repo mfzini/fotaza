@@ -10,5 +10,4 @@ mixin postCard(p)
                     a(href=`/profile/${p.author.id}`)= p.author.username
         .postTags
             span tags: 
-                each tag in p.tags
-                    span #{tag.tag} 
+                =p.tags.map(t => t.tag).join(', ')

@@ -6,11 +6,11 @@ block head
 block main
     form#postForm(action="/post/create", method="post", enctype='multipart/form-data')
         label(for="title") Título
-            input.userInput(type="text", name="title", value=title)
+            input.userInput(type="text", name="title", value=title required)
         label(for="desc") Descripción
             textarea.userInput#desc(name="desc", maxlength='250', rows='3',  value=desc)
         label(for="tags") Etiquetas
-            input.userInput(type="text", name="tags", value=tags)
+            input.userInput(type="text", name="tags", value=tags required)
         label#add-files-btn(for="files") Seleccionar Archivos
             input#files(type="file", name="files", accept="image/*,video/*", multiple, style="display: none")
         #preview

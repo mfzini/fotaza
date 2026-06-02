@@ -6,7 +6,6 @@ import { userRouter } from './userRouter.js';
 import { ratingsRouter } from './ratingsRouter.js';
 import { commentsRouter } from './commentsRouter.js';
 import { search } from '../controllers/searchController.js';
-import { sCleaner } from '../middleware/stringCleaner.js';
 
 export const mainRouter: Router = express.Router();
 mainRouter.get('/', getHome);
@@ -15,4 +14,4 @@ mainRouter.use(postRouter);
 mainRouter.use(userRouter);
 mainRouter.use(ratingsRouter);
 mainRouter.use(commentsRouter);
-mainRouter.post('/search', sCleaner, search);
+mainRouter.post('/search', search);

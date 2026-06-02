@@ -38,23 +38,23 @@ if (comment) {
 }
 if (commentForm) {
     commentForm.addEventListener('submit', async event => {
-    event.preventDefault();
-    const textarea = document.getElementById('comment');
-    const text = textarea.value;
-    const fileId = getFileId();
-    const comment = await fetch(`/comments/${fileId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            fileId,
-            text
-        })
+        event.preventDefault();
+        const textarea = document.getElementById('comment');
+        const text = textarea.value;
+        const fileId = getFileId();
+        const comment = await fetch(`/comments/${fileId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                fileId,
+                text
+            })
+        });
+        textarea.value = '';
+        render();
     });
-    textarea.value = '';
-    render();
-});
 }
 
 stars.forEach(s => s.addEventListener('click', async event => {
@@ -87,26 +87,31 @@ async function renderRatings() {
     selected.checked = true;
 }
 
-function renderComments() {
-    fetch(`/comments/${getFileId()}`)
-        .then(response => response.json()
-            .then(comments => {
-                commentsContainer.innerHTML = comments.map(comment => `
-                    <div class='comment'>
-                        <div class='commentHeader'>
-                            <div class='author'>
-                                ${comment.author.username}
-                            </div>
-                            <div class='date'>
-                                ${new Date(comment.createdAt).toLocaleString('es-AR')}
-                            </div>
-                        </div>
-                         <div class='text'>
-                            ${comment.text}
-                        </div>
-                    </div>
-                `).join('');
-            }));
+async function renderComments() {
+    const comments = await fetch(`/comments/${getFileId()}`).then(response => response.json());
+    comments.forEach(c => {
+        const authorDiv = document.createElement('div');
+        authorDiv.classList.add('author');
+        authorDiv.textContent = c.author.username;
+        const dateDiv = document.createElement('div');
+        dateDiv.classList.add('date');
+        dateDiv.textContent = new Date(c.createdAt).toLocaleString('es-AR');
+        const textDiv = document.createElement('div');
+        textDiv.classList.add('text');
+        textDiv.textContent = c.text;
+
+        const commentHeader = document.createElement('div');
+        commentHeader.classList.add('commentHeader');
+        commentHeader.appendChild(authorDiv);
+        commentHeader.appendChild(dateDiv);
+
+        const comment = document.createElement('div');
+        comment.classList.add('comment');
+        comment.appendChild(commentHeader);
+        comment.appendChild(textDiv);
+
+        commentsContainer.appendChild(comment);
+    })
 }
 
 async function fetchRatings() {
