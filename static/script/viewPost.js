@@ -88,6 +88,7 @@ async function renderRatings() {
 }
 
 async function renderComments() {
+    commentsContainer.innerHTML = '';
     const comments = await fetch(`/comments/${getFileId()}`).then(response => response.json());
     comments.forEach(c => {
         const authorDiv = document.createElement('div');
