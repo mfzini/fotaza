@@ -20,7 +20,7 @@ server.use(helmet({
         }
     }
 }));
-
+server.set('trust proxy', 1); 
 server.use(session({
     name: 'jwt',
     secret: process.env.SESSION_SECRET!,
