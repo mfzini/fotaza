@@ -44,7 +44,7 @@ export async function checkCreatePost(req: Request, res: Response, next: NextFun
     if (req.files?.length == 0) err.push('La publicación requiere mínimo un archivo.');
 
     if (err.length > 0)
-        return res.render('createPost', { err, title: req.body.title, desc: req.body.desc, tags: req.body.tags.tags.toString() });
+        return res.render('createPost', { err, title: req.body.title, desc: req.body.desc, tags: req.body.tags.toString() });
 
     next();
 }

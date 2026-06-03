@@ -1,12 +1,12 @@
 const input = document.getElementById('files');
 const preview = document.getElementById('preview');
-const subitBtn = document.getElementById('submit');
+const submitBtn = document.getElementById('submit');
 const popover = document.getElementById('config-popover');
 const form = document.getElementById('postForm');
 const dt = new DataTransfer();
 const watermarks = new Map();
 
-subitBtn.addEventListener('click', submit);
+submitBtn.addEventListener('click', submit);
 input.addEventListener('change', cargarArchivos);
 popover.addEventListener('beforetoggle', popoverHook);
 
@@ -22,8 +22,10 @@ async function cargarArchivos(event) {
             continue;
         }
         watermarks.set(hash, '');
-        dt.items.add(file);
+        
         const container = createPreviewContainer(file, hash);
+        if (!container) return;
+        dt.items.add(file);
         preview.appendChild(container);
     }
 }
@@ -97,6 +99,10 @@ function popoverHook(e) {
 }
 
 function submit(e) {
+    if (dt.files.length == 0)  {
+        e.preventDefault();
+        return alert('No se seleccionó ningún archivo.')
+    }
     const hidden = document.createElement('input');
     hidden.type = 'text';
     hidden.style.display = 'none';

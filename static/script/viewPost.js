@@ -75,7 +75,7 @@ stars.forEach(s => s.addEventListener('click', async event => {
 async function renderRatings() {
     const ratings = await fetchRatings();
 
-    const promedio = ratings.reduce((acc, r) => acc + r.value, 0) / ratings.length;
+    const promedio = Math.floor((ratings.reduce((acc, r) => acc + r.value, 0) / ratings.length));
     document.getElementById('promedio').innerText = `${promedio > 0 ? 'Promedio: ' + promedio : ''}`;
 
     const [userRating] = ratings.filter(r => r.userId == userId);
