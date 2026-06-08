@@ -6,6 +6,7 @@ import { User } from '../models/User.js';
 import type { UUID } from 'crypto';
 import { sha256 } from '../utils/sha256.js';
 import { sequelize } from '../config/db.js';
+import { normalize } from '../utils/sCleaner.js';
 
 export async function getCreatePost(req: Request, res: Response, next: NextFunction) {
     res.render('createPost');
@@ -33,7 +34,8 @@ export async function postCreatePost(req: Request, res: Response, next: NextFunc
             }, { transaction });
         }
 
-        for (const tag of req.body.tags) {
+        for (let tag of req.body.tags) {
+            tag = normalize(tag);
             const [r] = await Tag.findOrCreate({
                 where: { tag },
                 defaults: { tag },

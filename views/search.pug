@@ -8,7 +8,7 @@ block main
         if (resultados.length == 0) 
             h1 No hay resultados!
 
-        if (option == 'username')
+        else if (option == 'username')
             each u in resultados
                 .userCard
                     a(href=`/profile/${u.id}`): h3 #{u.username}

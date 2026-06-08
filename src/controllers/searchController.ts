@@ -1,29 +1,25 @@
 import type { Request, Response, NextFunction } from "express"
 import { User } from "../models/User.js";
-import { Post, Tag } from "../models/Post.js";
+import { Post, PostTags, Tag } from "../models/Post.js";
 import { Op } from "sequelize";
 
 export async function search(req: Request, res: Response, next: NextFunction) {
     const { option } = req.body;
-    const q = req.body.q;
+    let q = req.body.q;
     if (!q) {
         return res.redirect('/');
     };
     let resultados;
     switch (option) {
         case 'tags':
+            q = q.split(',').map((q:string) => q.trim())
             resultados = await Post.findAll({
-                include: [{
-                    model: Tag,
-                    where: {
-                        tag: {
-                            [Op.in]: q.split(',')
-                        }
-                    },
-                    through: {
-                        attributes: []
+                include: [Tag],
+                where: {
+                    '$tags.tag$': {
+                        [Op.in]: q
                     }
-                }]
+                }
             })
             break;
         case 'username':

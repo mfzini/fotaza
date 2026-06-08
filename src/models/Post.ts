@@ -82,13 +82,8 @@ export class Tag extends Model<Tag, { tag: string }> {
     @Column(DataType.STRING)
     declare tag: string;
 
-    @ForeignKey(() => Post)
-    declare postId: UUID;
-
     @BelongsToMany(() => Post, () => PostTags)
     declare posts: Post[];
-
-
 }
 
 @Table
