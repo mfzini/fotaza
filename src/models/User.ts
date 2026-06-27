@@ -11,11 +11,14 @@ import {
     BeforeSave,
     HasMany,
     ForeignKey,
+    BelongsTo,
+    AfterCreate,
 } from "sequelize-typescript";
 import bcrypt from 'bcrypt';
 import { Post } from "./Post.js";
 import { Comment } from "./Comment.js";
 import { Rating } from "./Rating.js";
+import { Notification } from "./Notification.js";
 
 @Table({ paranoid: true })
 export class User extends Model {
@@ -85,10 +88,27 @@ export class Follow extends Model {
     @PrimaryKey
     @ForeignKey(() => User)
     @Column(DataType.UUID)
-    declare user: User;
+    declare userId: User;
 
     @PrimaryKey
     @ForeignKey(() => User)
     @Column(DataType.UUID)
+    declare targetId: User;
+
+    @BelongsTo(() => User)
+    declare user: User;
+
+    @BelongsTo(() => User)
     declare target: User;
+
+    @AfterCreate
+    static async notify(f: Follow) {
+        const u = await f.$get('user');
+        const t = await f.$get('target')
+        await Notification.create({
+            message: `${u?.username} te está siguiendo`,
+            target: t?.id,
+            href: `/profile/${u?.id}`
+        });
+    }
 }

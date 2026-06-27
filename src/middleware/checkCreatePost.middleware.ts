@@ -27,6 +27,7 @@ export async function checkCreatePost(req: Request, res: Response, next: NextFun
     req.body.title = normalize(req.body.title);
     req.body.desc = normalize(req.body.desc);
     req.body.tags = normalize(req.body.tags).split(/[,;]/);
+    req.body.action = {};
 
     const files = req.files as Express.Multer.File[];
     const err: string[] = [];

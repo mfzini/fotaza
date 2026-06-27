@@ -47,7 +47,7 @@ export async function getProfile(req: Request, res: Response, next: NextFunction
         isOwn = user.id == profileId;
         isFollowing = await Follow.findOne({
             where: {
-                user: user.id, target: profileId
+                userId: user.id, targetId: profileId
             }
         });
 
@@ -66,13 +66,13 @@ export async function follow(req: Request, res: Response, next: NextFunction) {
     if (!target) {
         return res.status(404).json({ message: 'Usuario no encontrado.' })
     }
-    let f = await Follow.findOne({ where: { user: user.id, target: targetId } });
+    let f = await Follow.findOne({ where: { userId: user.id, targetId } });
     if (f) {
         f.destroy();
         return res.status(204).end();
     }
     f = await Follow.create({
-        user: user.id, target: targetId
+        userId: user.id, targetId
     });
     res.status(200).end();
 }

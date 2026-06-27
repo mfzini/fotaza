@@ -1,9 +1,10 @@
 import type { NextFunction, Request, Response } from "express";
-import { User } from "../models/User.js";
+import { Follow, User } from "../models/User.js";
 import { Post, Tag } from "../models/Post.js";
 import { File } from '../models/File.js'
 import { col, fn } from "sequelize";
 import { Rating } from "../models/Rating.js";
+import { notify } from "../utils/sendNotifications.js";
 
 export async function getHome(req: Request, res: Response) {
     const recientes = await Post.findAll({
@@ -29,6 +30,7 @@ export async function getHome(req: Request, res: Response) {
         order: [[fn('COUNT', col('files.ratings.userId')), 'DESC']],
         limit: 5
     });
+
     res.render('index', { recientes, top })
 }
 

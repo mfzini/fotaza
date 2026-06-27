@@ -11,17 +11,19 @@ import {
     AllowNull,
     Validate,
     HasMany,
+    AfterCreate,
 } from "sequelize-typescript";
-import { User } from "./User.js";
+import { Follow, User } from "./User.js";
 import type { UUID } from "node:crypto";
 import { File } from "./File.js";
 import { Op } from "sequelize";
 import { Comment } from "./Comment.js";
 import { Rating } from "./Rating.js";
+import { Notification } from "./Notification.js";
 
 @Table
 export class Post extends Model {
-    
+
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
@@ -73,6 +75,21 @@ export class Post extends Model {
                 }]
             }]
         });
+    }
+
+    @AfterCreate
+    static async notify(p: Post) {
+        const u = await p.$get('author');
+        const list = await Follow.findAll({ where: { targetId: p.authorId } });
+        const promises : Promise<Notification>[] = [];
+        list.forEach(f => {
+            promises.push(Notification.create({
+                target: f.userId,
+                message: `${u?.username} ha creado una nueva publicación.`,
+                href: `/post/${p.id}`
+            }))
+        });
+        await Promise.all(promises);
     }
 }
 

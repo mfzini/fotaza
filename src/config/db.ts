@@ -1,9 +1,10 @@
 import { Sequelize } from "sequelize-typescript";
 import { Follow, User } from "../models/User.js";
 import { Post, Tag, PostTags } from "../models/Post.js";
-import { File } from "../models/File.js";
+import { File, Report, ReportReason } from "../models/File.js";
 import { Comment } from "../models/Comment.js";
 import { Rating } from "../models/Rating.js";
+import { Notification } from "../models/Notification.js";
 
 export const sequelize: Sequelize = new Sequelize(process.env.DB_URL!, {
   logging: false,
@@ -15,7 +16,10 @@ export const sequelize: Sequelize = new Sequelize(process.env.DB_URL!, {
     File,
     Tag,
     Comment,
-    Rating
+    Rating,
+    Report,
+    Notification,
+    ReportReason
   ],
 });
 
