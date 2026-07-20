@@ -229,7 +229,6 @@
     video {
         display: block;
         /* Elimina espacios fantasma abajo */
-        width: 100%;
         height: auto;
         object-fit: cover;
         border-radius: 0;
