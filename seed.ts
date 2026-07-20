@@ -4,30 +4,36 @@ import { Post, Tag, PostTags } from './src/models/Post.js';
 import { File } from './src/models/File.js';
 import { Rating } from './src/models/Rating.js';
 import { Comment } from './src/models/Comment.js';
+import { ReportComment, ReportFile, ReportReason } from './src/models/Reports.js';
+import { Role } from './src/models/Role.js';
+import { Mail } from './src/models/Mail.js';
 // Banco de URLs proporcionado
 const mediaUrls = [
     "https://uendffjfnpsqvdpvlifs.supabase.co/storage/v1/object/public/fotaza/f6fe6678c39f30a4bd9773b04f5951fe1cfe3f3e91cd8b06bcf2734821101f4d.png",
     "https://uendffjfnpsqvdpvlifs.supabase.co/storage/v1/object/public/fotaza/3224cf0da92cfef1c9275fff5b01a6e20cf99fb15fe7f7c31750517e34374184.png",
-    "https://uendffjfnpsqvdpvlifs.supabase.co/storage/v1/object/public/fotaza/9dc2d4b908c69497d79cf1304444e3a56162b43137594dfc61477e42d2f4aac8.png",
-    "https://uendffjfnpsqvdpvlifs.supabase.co/storage/v1/object/public/fotaza/93d82fb5c3b9186bef31bbbb9f87ea7e77988758a59b1212501b54c5c81a314b.png",
-    "https://uendffjfnpsqvdpvlifs.supabase.co/storage/v1/object/public/fotaza/d308e46d62e5bf572860be8a970a5736d4a9c8687bbaa671e282a7dd1ea6bf33.png",
-    "https://uendffjfnpsqvdpvlifs.supabase.co/storage/v1/object/public/fotaza/8d4f42561da175ab47f0259f1ecc9d1b676b499d1ba4ac85346e040aa53b6339.png",
-    "https://uendffjfnpsqvdpvlifs.supabase.co/storage/v1/object/public/fotaza/d22ed648abd1c1011242cf3eee6f68a317cd8f0908aeff914c8773170084fd89.png",
-    "https://uendffjfnpsqvdpvlifs.supabase.co/storage/v1/object/public/fotaza/b1ea18493ceb0c0f5aaed7831cae90cfcff611cf6a18b7ad9a3d679d0476acf0.png",
     "https://uendffjfnpsqvdpvlifs.supabase.co/storage/v1/object/public/fotaza/928e3df14973fe8bc1717922f798bdcfc6d17ef5e3bf1f68a9f7e2bb64859046.mp4"
 ];
 async function runSeeder() {
     try {
-        console.log('⏳ Conectando y sincronizando base de datos...');
         await sequelize.sync({ force: true });
-        console.log('✅ Base de datos limpia.');
+        const reportReasons: ReportReason[] = [];
+        ['NSFW', 'Spam', 'Plagio'].forEach(async reason => reportReasons.push(await ReportReason.create({ reason })));
+        const roles = [];
+        ['user', 'mod'].forEach(async role => roles.push(await Role.create({ name: role })));
+        const tags: Tag[] = [];
+        ['teclados', 'videito'].forEach(async tag => tags.push(await Tag.create({ tag })));
 
-        // 1. Crear Usuarios (Actualizado: password 'test123' para el usuario test)
-        console.log('👥 Creando usuarios...');
         const userTest = await User.create({
             username: 'test',
-            password: 'test123', 
-            email: 'test@test.dev'
+            password: 'test123',
+            email: 'test@test.dev',
+        });
+        userTest.$add('role', 'mod')
+        const userBaneado = await User.create({
+            username: 'baneado',
+            password: 'baneado',
+            email: 'baneado@example.com',
+            strikes: 3
         });
 
         const userAlice = await User.create({
@@ -36,109 +42,92 @@ async function runSeeder() {
             email: 'alice@example.com'
         });
 
-        // Relación de seguimiento compuesta
-        await Follow.create({ user: userTest.id, target: userAlice.id });
+        const email_alice_test = await Mail.create({
+            fromId: userAlice.id,
+            toId: userTest.id,
+            subject: 'Primer mail!',
+            message: "Vamo lo pibeee!"
+        });
 
-        // 2. Crear Etiquetas
-        console.log('🏷️ Creando etiquetas...');
-        const tagArt = await Tag.create({ tag: 'art' });
-        const tagTech = await Tag.create({ tag: 'tech' });
-        const tagDesign = await Tag.create({ tag: 'design' });
+        const userBob = await User.create({
+            username: 'bob_builder',
+            password: 'password123',
+            email: 'bob@example.com'
+        });
 
-        // 3. Crear Publicaciones
-        console.log('📝 Creando publicaciones...');
-        
-        // Post Inicial
-        const postOld = await Post.create({
-            title: 'Galería de inspiración y video',
-            desc: 'Un compilado inicial de recursos interesantes.',
+        const userCharlie = await User.create({
+            username: 'charlie_gamer',
+            password: 'charliepassword',
+            email: 'charlie@example.com'
+        });
+
+        const userDiana = await User.create({
+            username: 'diana_dev',
+            password: 'dianapassword',
+            email: 'diana@example.com'
+        });
+
+        const firstPost = await Post.create({
+            title: 'Primer post!',
+            desc: 'Primer post!!!',
+            authorId: userTest.id,
+        });
+        await firstPost.$add('tag', tags[0]);
+
+        const file_0 = await File.create({
+            hash: 'membrana',
+            location: mediaUrls[0],
+            mimetype: 'image/png',
+            postId: firstPost.id,
+            originalName: 'teclado_ergonomico.png',
+            watermark: 'fotaza'
+        });
+
+        const file_1 = await File.create({
+            hash: 'mecanico',
+            location: mediaUrls[1],
+            mimetype: 'image/png',
+            postId: firstPost.id,
+            originalName: 'teclado_mecanico.png'
+        });
+
+
+        const secondPost = await Post.create({
+            title: 'Segundo post!',
+            desc: 'Segundo post!!!',
             authorId: userAlice.id
         });
+        await secondPost.$add('tag', tags[1]);
 
-        // Penúltimo Post (Tendrá 3 imágenes)
-        const postPenultimate = await Post.create({
-            title: 'Revisión de diseño UI/UX',
-            desc: 'Analizando las estructuras visuales de las últimas interfaces recibidas.',
-            authorId: userAlice.id
+        const file_2 = await File.create({
+            hash: 'mp4',
+            location: mediaUrls[2],
+            mimetype: 'video/mp4',
+            postId: secondPost.id,
+            originalName: 'videito',
         });
 
-        // Último Post (Tendrá 1 imagen)
-        const postLatest = await Post.create({
-            title: 'Mi última obra conceptual',
-            desc: 'La pieza final de la colección de esta semana.',
-            authorId: userTest.id
+        [userBob.id, userCharlie.id, userDiana.id].forEach(async userId => {
+            await ReportFile.create({ userId, fileId: file_0.id, reasonId: reportReasons[0].id });
+            await ReportFile.create({ userId, fileId: file_1.id, reasonId: reportReasons[0].id });
         });
 
-        // REGLA: Cada post debe tener como mínimo una etiqueta
-        console.log('🔗 Vinculando etiquetas a cada publicación...');
-        await PostTags.create({ postId: postOld.id, tag: tagArt.tag });
-        await PostTags.create({ postId: postPenultimate.id, tag: tagTech.tag });
-        await PostTags.create({ postId: postPenultimate.id, tag: tagDesign.tag }); // Opcional: más de una
-        await PostTags.create({ postId: postLatest.id, tag: tagArt.tag });
-
-        // 4. Poblar Archivos (Files)
-        console.log('📁 Distribuyendo imágenes y videos en los posts...');
-
-        // REGLA: Último post -> 1 imagen (Sin watermark para demostrar que no es obligatorio)
-        const fileLatest = await File.create({
-            hash: 'hash_latest_1',
-            url: mediaUrls[0],
-            mimetype: 'image/png',
-            watermark: undefined, // Omitido / No obligatorio
-            postId: postLatest.id
-        });
-
-        // REGLA: Penúltimo post -> 3 imágenes (Algunas con watermark, otras no)
-        const filePenultimate1 = await File.create({
-            hash: 'hash_pen_1',
-            url: mediaUrls[1],
-            mimetype: 'image/png',
-            watermark: 'Borrador Oficial',
-            postId: postPenultimate.id
-        });
-        const filePenultimate2 = await File.create({
-            hash: 'hash_pen_2',
-            url: mediaUrls[2],
-            mimetype: 'image/png',
-            watermark: undefined, // Omitido / No obligatorio
-            postId: postPenultimate.id
-        });
-        const filePenultimate3 = await File.create({
-            hash: 'hash_pen_3',
-            url: mediaUrls[3],
-            mimetype: 'image/png',
-            watermark: undefined, // Omitido / No obligatorio
-            postId: postPenultimate.id
-        });
-
-        // Resto de la multimedia va al post antiguo
-        for (let i = 4; i < mediaUrls.length; i++) {
-            const url = mediaUrls[i];
-            const isVideo = url.endsWith('.mp4');
-            await File.create({
-                hash: `hash_old_${i}`,
-                url: url,
-                mimetype: isVideo ? 'video/mp4' : 'image/png',
-                watermark: isVideo ? undefined : 'Galería general',
-                postId: postOld.id
-            });
-        }
-
-        // 5. Interacciones (Comentarios y Calificaciones)
-        console.log('💬 Añadiendo interacciones...');
-        await Comment.create({
-            text: '¡Wow! Esta única imagen del último post es asombrosa.',
+        const comment_0 = await Comment.create({
+            text: 'Primer comentario!',
             authorId: userAlice.id,
-            fileId: fileLatest.id
+            fileId: file_0.id
+        });
+        [userBob.id, userCharlie.id, userDiana.id].forEach(async userId => {
+            await ReportComment.create({ userId, commentId: comment_0.id, reasonId: reportReasons[0].id });
         });
 
         await Rating.create({
             userId: userAlice.id,
-            fileId: fileLatest.id,
+            fileId: file_0.id,
             value: 5
         });
 
-        console.log('🚀 ¡Base de datos sembrada con éxito!');
+        console.log('Todo OK');
     } catch (error) {
         console.error('❌ Error ejecutando el seeder:', error);
     } finally {

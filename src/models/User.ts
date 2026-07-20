@@ -13,16 +13,21 @@ import {
     ForeignKey,
     BelongsTo,
     AfterCreate,
+    BelongsToMany,
+    BeforeCreate,
 } from "sequelize-typescript";
 import bcrypt from 'bcrypt';
 import { Post } from "./Post.js";
 import { Comment } from "./Comment.js";
 import { Rating } from "./Rating.js";
 import { Notification } from "./Notification.js";
+import { Collection } from "./Collection.js";
+import { Role, UserRole } from "./Role.js";
+import { File } from "./File.js";
+import { Mail } from "./Mail.js";
 
 @Table({ paranoid: true })
 export class User extends Model {
-
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
@@ -60,6 +65,14 @@ export class User extends Model {
     @Column(DataType.STRING)
     declare email: string;
 
+    @Default(0)
+    @Column(DataType.INTEGER)
+    declare strikes: number;
+
+
+    @BelongsToMany(() => Role, () => UserRole)
+    declare roles: Role[];
+
     @HasMany(() => Post)
     declare posts: Post[]
 
@@ -72,6 +85,9 @@ export class User extends Model {
     @HasMany(() => Follow)
     declare following: Follow[];
 
+    @HasMany(() => Interest)
+    declare interestList: Interest[];
+
     @BeforeSave
     static async hashPassword(user: User) {
         if (!user.changed('password')) return;
@@ -80,6 +96,16 @@ export class User extends Model {
 
     async comparePassword(password: string) {
         return bcrypt.compare(password, this.password);
+    }
+
+    @AfterCreate
+    static async createFovoritesCollection(user: User) {
+        const collection = await Collection.create({ ownerId: user.id, name: 'Favoritas', isFavorite: true });
+        await user.$add('role', 'user');
+    }
+
+    isMod(): boolean {
+        return this.roles.filter(r => r.name == 'mod').length > 0;
     }
 }
 
@@ -107,8 +133,42 @@ export class Follow extends Model {
         const t = await f.$get('target')
         await Notification.create({
             message: `${u?.username} te está siguiendo`,
-            target: t?.id,
+            userId: t?.id,
             href: `/profile/${u?.id}`
         });
     }
+}
+
+@Table
+export class Interest extends Model {
+    
+    @ForeignKey(() => User)
+    @Column(DataType.UUID)
+    declare userId: string;
+
+    @PrimaryKey
+    @ForeignKey(() => File)
+    @Column(DataType.UUID)
+    declare fileId: string;
+
+    @BelongsTo(() => User)
+    declare user: User;
+
+    @BelongsTo(() => File)
+    declare file: File;
+
+    @BeforeCreate
+    static async notify(instance: Interest) {
+        const domain = process.env.domain || 'localhost:3000'
+        const f = await instance.$get('file', {include: [{model: Post, include: [User]}]});
+        const mail = await Mail.create({
+            fromId: instance.userId,
+            toId: f?.post.authorId,
+            subject: `Me interea tu archivo ${f?.originalName}`,
+            message: `Buenas. Me interesa tu archivo ${f?.originalName} que posteaste en ${f?.post.title}
+            ${domain}/post/${f?.postId}?file=${f?.id}
+            `
+        })
+    }
+
 }

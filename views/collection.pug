@@ -1,0 +1,15 @@
+extends layout
+include mixins/postCard
+
+block head
+    title Fotaza - #{collection.name}
+    link(rel="stylesheet", href="/style/collection.css")
+    p#collectionId(style='display:none') #{collection.id}
+block main
+    h1 #{collection.name}
+    each p in collection.posts
+        .post
+            +postCard(p)
+            button.removePost(type="button" data-post-id=`${p.id}`).blue-button ❌ Eliminar
+    
+    script(type='module', src="/script/collection.js") 

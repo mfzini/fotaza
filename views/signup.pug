@@ -17,8 +17,9 @@ block main
                 label(for="password") Contraseña:
                     input(type="password" name="password" required)
 
-                input(type="submit", value="Crear cuenta")
+                button(type="submit") Crear cuenta
         if err
-            ul
-                each e in err
-                    li=e
+            .error
+                ul
+                    each e in err
+                        li=e

@@ -2,56 +2,130 @@ extends layout
 
 block head
     link(rel="stylesheet", href="/style/viewPost.css")
-    title #{title} - Fotaza
+    title Fotaza - #{post.title}
 block main
-    #postHeader
-        h1#title #{title}
-        #postData Publicado por: 
-            a(href=`/profile/${author.id}`) #{`${author.username}`}
-            span #{` el ${new Date(createdAt).toLocaleString('es-AR')}`}
-    #gallery
-        button#btn_p.gbtns(type="button") <
-        #mediaContainer
-            each f in files
-                if !user && f.watermark
-                    .media(style='display: none', data-file-id=`${f.id}`)
-                        h2 Este archivo está protegido.
-                        h2 Inicia sesión para visualizarlo!
-                    -continue
-                .media(style='display: none', data-file-id=`${f.id}`)
-                    if f.mimetype.startsWith('image')
-                        img(src=f.url)
-                    else 
-                        video(src=f.url, controls, muted)
-        button#btn_n.gbtns(type="button") >
-    if user
-        form#ratingForm(action="", method="post")
-            .rating
-                input#star5(type="radio" name="rating" value="5")
-                label(for="star5") ★
-                input#star4(type="radio" name="rating" value="4")
-                label(for="star4") ★
-                input#star3(type="radio" name="rating" value="3")
-                label(for="star3") ★
-                input#star2(type="radio" name="rating" value="2")
-                label(for="star2") ★
-                input#star1(type="radio" name="rating" value="1")
-                label(for="star1") ★
-    p#promedio
-        
-    #postContent
-        #desc: p #{desc}
-        #tags: p tags: 
-            =tags.map(t => t.tag).join(', ')
-    #commentsBox
+    #postHeader(data-id=`${post.id}` data-author-id=`${post.authorId}`)
+        div
+            h1#title #{post.title}
+            p Publicado por 
+                a(href=`/profile/${post.author.id}`): span #{`${post.author.username}`}
+                span #{` el ${new Date(post.createdAt).toLocaleDateString('es-AR')}`}
         if user
-            form#postComment 
-                textarea#comment(name="text", placeholder='Deja un commentario.' required)
-                button(type="submit") ⮞
-        #comments
-            
+            if post.authorId == user.id
+                .authorBtns
+                    button#toggleCommentsBtn(type='button' data-can-be-commented=`${post.canBeCommented}`).blue-button
+                        | #{post.canBeCommented ? 'Cerrar comentarios' : 'Abrir Comentarios'}
+                    button#deletePostBtn(type="button").blue-button ❌ Eliminar
+
+    #postBody
+        p #{post.desc}
+    #postFiles
+        if post.files.length > 1
+            button#btn_p.gbtns(type="button") #{'<'}
+        #gallery
+            for file in post.files
+                .file(id=file.id, style='display: none', data-watermark=file.watermark)
+                    .mediaContainer
+                        if !user && file.watermark
+                            h2 Este archivo está protegido.
+                            a(href='/login'): h2 Inicia sesión para visualizarlo!
+                            //-continue // el continue esta roto. asi te das cuenta que esto no lo usa ni el loro xD
+                        else
+                            if file.mimetype.startsWith('image')
+                                img(src=file.location, alt=file.originalName)
+                            else
+                                video(src=file.location, controls, muted)
+                    if user
+                        if user.id != post.authorId
+                            - let userRating = file.ratings.filter(r  => r.userId == user.id)[0]?.value ?? 0
+                            - const promedio = Math.floor((file.ratings.reduce((acc, r) => acc + r.value, 0) / file.ratings.length))
+                            if promedio
+                                p#promedio Promedio: #{promedio} 
+                            form.starsForm(id=`starsForm-${file.id}` action=`/ratings/${file.id}`, method="post")
+                                input(id=`star5-${file.id}` type="radio" name="rating" value="5" checked=(userRating == 5))
+                                label(for=`star5-${file.id}`) ★
+                                input(id=`star4-${file.id}` type="radio" name="rating" value="4" checked=(userRating == 4))
+                                label(for=`star4-${file.id}`) ★
+                                input(id=`star3-${file.id}` type="radio" name="rating" value="3" checked=(userRating == 3))
+                                label(for=`star3-${file.id}`) ★
+                                input(id=`star2-${file.id}` type="radio" name="rating" value="2" checked=(userRating == 2))
+                                label(for=`star2-${file.id}`) ★
+                                input(id=`star1-${file.id}` type="radio" name="rating" value="1" checked=(userRating == 1))
+                                label(for=`star1-${file.id}`) ★
+                            .fileButtons
+                                if file.reports.length == 0
+                                    button(type="button").blue-button.reportFileBtn Reportar
+                                if file.interestedList.length == 0
+                                    button(id=`interested-${file.id}` type="button").blue-button.interestedBtn Me interesa
+                    for comment in file.comments
+                        .comment(id=comment.id)
+                            .commentHeader
+                                a(href=`/profile/${comment.authorId}`): h4 #{comment.author.username}:
+                                span #{new Date(comment.createdAt).toLocaleString('es')}
+                            .commentBody
+                                p #{comment.text}
+                            if user
+                                .commentFooter
+                                    .commentBtns
+                                        if comment.authorId != post.authorId && comment.authorId != user.id && comment.reports.length == 0
+                                            span.reportCommentBtn(data-comment-id=comment.id) Reportar
+                                        if user.id == post.authorId
+                                            span.deleteCommentBtn(data-comment-id=comment.id) Eliminar
+                                            
+                    if user
+                        form#postComment(action=`/post/${post.id}?file=${file.id}`, method="post", style=`display: ${post.canBeCommented ? 'flex' : 'none'}`) 
+                            textarea#comment(name="text", placeholder='Deja un commentario.' required)
+                            button(type="submit") ⮞
+        if post.files.length > 1
+            button#btn_n.gbtns(type="button") #{'>'}
+
+    if user
+        #reportPopover(popover).modal
+            h2#reportPopoverTitle
+            form#reportForm(action="/report", method="post") 
+                input(type="hidden", name="postId", value=`${post.id}`)
+                input#reportFileId(type="hidden", name="fileId")
+                input#reportCommentId(type="hidden", name="commentId")
+                section 
+                    label(for='reason') Motivo
+                    select#reportReason(name="reason")
+                        for r in reportReasons
+                            option(value=`${r.id}`) #{r.reason}
+                section
+                    label(for="desc") Detalle
+                    textarea#reportDesc(name="desc")
+                section
+                    button#sendReportBtn(type='submit').blue-button Enviar reporte
+
+        #addToCollectionPopover(popover).modal
+            .modalContent
+                h2 Agregar a una colección
+                formocu
+                    section
+                        label(for='collection') Colección
+                        select#collectionId(name='collectionId')
+                            for collection in collections
+                                option(value=`${collection.id}`) #{collection.name}
+                    button#addToCollectionBtnSubmit.blue-button Agregar
+                p#responseMessage
+    #interestedPopover(popover).modal
+        h2 Mensaje enviado!
+        p Se ha enviado una notificación a #{post.author.username} para que te contacte y puedan llegar a un acuerdo.
+    if user
+        if user.id == post.authorId
+            #deletePopover(popover).modal
+                h2 Eliminar post?
+                .deleteBtns
+                    button#cancelDeleteBtn(type='button').blue-button Cancelar
+                    button#confirmDeleteBtn(type="button").blue-button Eliminar
+        div(id='deleteCommentPopover' popover).modal
+            h2 Eliminar comentario?
+            .popoverBtns
+                button(type="button" commandfor='deleteCommentPopover' command='hide-popover').blue-button Cancelar 
+                button#confirmDeleteCommentBtn(type="button").blue-button  Eliminar
+
 
     script(type='module', src="/script/viewPost.js") 
-        
+             
         
 

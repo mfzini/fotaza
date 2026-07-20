@@ -9,29 +9,38 @@ html(lang="es")
         header
             nav(data-user-id=(user ? user.id : ''))
                 h1#siteName: a(href="/") Fotaza
-                form#searchBar(action="/search", method="post")
+                form#searchBar(action="/search", method="get")
                     input#searchInput(type="text", name="q", autocomplete='off' ,placeholder='Buscar...')
                     button#glass(type="submit") 🔍
                     #searchHelper
                         .searchOption
-                            label(for="optionTags") Tags
-                            input#optionTags(type="radio", name="option", value='tags', checked)
+                            label(for="tags") Tags
+                            input(type="checkbox", name="tags", checked)
                         .searchOption
-                            label(for="optionUsername") Usuario
-                            input#optionUsername(type="radio", name="option" value='username')
+                            label(for="username") Usuario
+                            input(type="checkbox", name="username")
                         .searchOption
-                            label(for="optionTitle") Título
-                            input#optionTitle(type="radio", name="option", value='title')
+                            label(for="title") Título
+                            input(type="checkbox", name="title")
                             
                 ul
                     if user
-                        li: a(href='/post/create') Publicar
-                        li: a(href="/profile") Perfil
-                        li: form(action="/logout", method="post"): button(type="submit") Salir 🚪
+                        li: a(href='/moderation') ⚡
+                        li: a(href='/post/create') 📝
+                        li: a(href='/notifications') 🔔
+                            if notificationsCount > 0
+                                #notificationsCount.notificationsCount: span #{notificationsCount}
+                        li: a(href='/collections') 🗂️
+                        li: a(href='/mail') ✉️
+                            if unreadedMailCount > 0
+                                #unreadedMailCount.notificationsCount: span #{unreadedMailCount}
+                        li: a(href="/profile") 👤
+                        li: form(action="/logout", method="post"): button(type="submit") 🚪
                     else
                         li: a(href="/login") Iniciar Sesión
                         li: a(href="/signup") Crear Cuenta
         main
             block main
     block scripts
+    
     script(src="/script/index.js")

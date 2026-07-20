@@ -1,132 +1,139 @@
-const gallery = document.getElementById('gallery');
-const btn_p = document.getElementById('btn_p');
-const mediaContainer = document.getElementById('mediaContainer');
-const btn_n = document.getElementById('btn_n');
-const commentsContainer = document.getElementById('comments');
-const commentForm = document.getElementById('postComment');
-const stars = [...document.getElementsByName('rating')];
-const collection = [...document.getElementById('mediaContainer').children];
+const postData = document.getElementById('postHeader').dataset;
+const files = [...document.getElementsByClassName('file')];
+let params = new URLSearchParams(window.location.search);
+let requestedFileId = params.get('file');
+let requestedIndex = files.findIndex(file => file.id == requestedFileId);
+let i = requestedIndex < 0 ? 0 : requestedIndex;
+files[i].style.display = 'inline-block';
 
-let i = 0;
-render();
+[...document.getElementsByClassName('interestedBtn')]
+    .forEach(btn => btn.addEventListener('click', async e => {
+        const popover = document.getElementById('interestedPopover');
+        popover.showPopover();
+        const fileId = files[i].id;
+        const res = await fetch(`/interested/${fileId}`, {method: 'POST'});
+        if (res.status != 200) return;
+        document.getElementById(`interested-${fileId}`).remove();
+        setInterval(() => popover.hidePopover(), 5000);
+    }));
 
-[btn_p, btn_n].forEach(b => {
-    b.addEventListener('click', (e) => {
-        e.preventDefault();
-        collection[i].style.display = 'none';
-        if (collection[i].firstChild.nodeName == 'VIDEO') {
-            collection[i].firstChild.pause();
-        }
-        i += e.target.id == 'btn_n' ? 1 : -1
-        if (i >= collection.length) {
-            i = 0;
-        } else if (i < 0) {
-            i = collection.length - 1;
-        }
-        render();
-    })
-});
-
-const comment = document.getElementById('comment');
-if (comment) {
-    comment.addEventListener('keypress', e => {
-        if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
-            event.preventDefault();
-            commentForm.dispatchEvent(new Event('submit', { cancelable: true }));
-        }
-    });
-}
-if (commentForm) {
-    commentForm.addEventListener('submit', async event => {
-        event.preventDefault();
-        const textarea = document.getElementById('comment');
-        const text = textarea.value;
-        const fileId = getFileId();
-        const comment = await fetch(`/comments/${fileId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                fileId,
-                text
-            })
+[...document.getElementsByClassName('gbtns')]
+    .forEach(btn => {
+        btn.addEventListener('click', e => {
+            files[i].style.display = 'none';
+            i += e.target.innerText == '>' ? 1 : -1;
+            if (i < 0) {
+                i = files.length - 1;
+            } else if (i >= files.length) {
+                i = 0;
+            }
+            files[i].style.display = 'inline-block';
         });
-        textarea.value = '';
-        render();
     });
-}
 
-stars.forEach(s => s.addEventListener('click', async event => {
-    const value = event.target.value;
-    const fileId = getFileId();
-    const res = await fetch(`/ratings/${fileId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            value
+[...document.getElementsByClassName('starsForm')]
+    .forEach(form => form.addEventListener('change', e => {
+        form.submit();
+    }));
+
+const reportPopover = document.getElementById('reportPopover');
+if (reportPopover) {
+    reportPopover.addEventListener('toggle', e => {
+        if (e.newState == 'hidden') return;
+        inputFileId.value = files[i].id;
+    });
+    const reportPopoverTitle = document.getElementById('reportPopoverTitle');
+    const inputFileId = document.getElementById('reportFileId');
+    const inputReportCommentId = document.getElementById('reportCommentId');
+
+    [...document.getElementsByClassName('reportFileBtn')]
+        .forEach(btn => btn.addEventListener('click', e => {
+            reportPopoverTitle.textContent = 'Reportar imágen';
+            inputReportCommentId.value = '';
+            reportPopover.showPopover();
+        }));
+
+    [...document.getElementsByClassName('reportCommentBtn')].forEach(btn => {
+        btn.addEventListener('click', e => {
+            const commentId = e.target.dataset.commentId;
+            reportPopoverTitle.textContent = 'Reportar comentario';
+            inputReportCommentId.value = commentId;
+            reportPopover.showPopover();
         })
-    });
-    renderRatings();
-}));
-
-async function renderRatings() {
-    const ratings = await fetchRatings();
-
-    const promedio = Math.floor((ratings.reduce((acc, r) => acc + r.value, 0) / ratings.length));
-    document.getElementById('promedio').innerText = `${promedio > 0 ? 'Promedio: ' + promedio : ''}`;
-
-    const [userRating] = ratings.filter(r => r.userId == userId);
-    if (!userRating) {
-        stars.forEach(s => s.checked = false);
-        return;
-    }
-    const [selected] = stars.filter(s => s.value == userRating.value);
-    selected.checked = true;
-}
-
-async function renderComments() {
-    commentsContainer.innerHTML = '';
-    const comments = await fetch(`/comments/${getFileId()}`).then(response => response.json());
-    comments.forEach(c => {
-        const authorDiv = document.createElement('div');
-        authorDiv.classList.add('author');
-        authorDiv.textContent = c.author.username;
-        const dateDiv = document.createElement('div');
-        dateDiv.classList.add('date');
-        dateDiv.textContent = new Date(c.createdAt).toLocaleString('es-AR');
-        const textDiv = document.createElement('div');
-        textDiv.classList.add('text');
-        textDiv.textContent = c.text;
-
-        const commentHeader = document.createElement('div');
-        commentHeader.classList.add('commentHeader');
-        commentHeader.appendChild(authorDiv);
-        commentHeader.appendChild(dateDiv);
-
-        const comment = document.createElement('div');
-        comment.classList.add('comment');
-        comment.appendChild(commentHeader);
-        comment.appendChild(textDiv);
-
-        commentsContainer.appendChild(comment);
     })
 }
 
-async function fetchRatings() {
-    return fetch(`/ratings/${getFileId()}`).then(r => r.json());
-}
-function getFileId() {
-    return collection[i].dataset.fileId
+const deletePopover = document.getElementById('deletePopover');
+if (deletePopover) {
+    const deletePostBtn = document.getElementById('deletePostBtn');
+    if (deletePostBtn) deletePostBtn.addEventListener('click', e => {
+        deletePopover.showPopover();
+    });
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', async e => {
+        console.log(`/post/${postData.id}`)
+        const r = await fetch(`/post/${postData.id}`, {
+            method: 'DELETE',
+        });
+
+        if (r.status == 200) window.location = '/';
+    })
+    document.getElementById('cancelDeleteBtn').addEventListener('click', e => {
+        deletePopover.hidePopover();
+    });
+
+};
+
+const deleteCommentPopover = document.getElementById('deleteCommentPopover');
+if (deleteCommentPopover) {
+
+    [...document.getElementsByClassName('deleteCommentBtn')]
+        .forEach(btn => btn.addEventListener('click', e => {
+            const confirmDeleteCommentBtn = document.getElementById('confirmDeleteCommentBtn');
+            confirmDeleteCommentBtn.dataset.commentId = e.target.dataset.commentId;
+            deleteCommentPopover.showPopover();
+        }));
+
+    document.getElementById('confirmDeleteCommentBtn').addEventListener('click', async e => {
+        const confirmDeleteCommentBtn = document.getElementById('confirmDeleteCommentBtn');
+        const commentId = confirmDeleteCommentBtn.dataset.commentId;
+        if (!commentId) return;
+        const res = await fetch(`/comments/${commentId}`, {
+            method: 'DELETE',
+        })
+        if (res.status != 200) return;
+        const comment = document.getElementById(commentId);
+        comment.remove();
+        deleteCommentPopover.hidePopover();
+    })
 }
 
-function render() {
-    if (collection.length == 1) {
-        [btn_p, btn_n].forEach(b => b.style.display = 'none');
-    }
-    collection[i].style.display = 'flex';
-    renderComments();
-    renderRatings();
+const toggleCommentsBtn = document.getElementById('toggleCommentsBtn');
+if (toggleCommentsBtn) {
+    toggleCommentsBtn.addEventListener('click', async e => {
+        const postId = postData.id;
+        const r = await fetch(`/post/${postId}`, {
+            method: 'PATCH',
+        });
+        if (r.status != 200) return;
+        const { newValue } = await r.json();
+        toggleCommentsBtn.innerText = newValue ? 'Cerrar comentarios' : 'Abrir comentarios';
+        const postCommentForm = document.getElementById('postComment');
+        postCommentForm.style.display = newValue ? 'flex' : 'none';
+    })
+}
+
+if (getUserId()) {
+    files.forEach(f => {
+        const watermark = f.dataset.watermark;
+        const container = f.querySelector('.mediaContainer')
+        if (watermark) {
+            ['mousedown','contextmenu'].forEach(event => f.addEventListener(event, e => e.preventDefault()));
+            f.addEventListener('mousedown', e => e.preventDefault());
+            const watermarkDiv = document.createElement('div');
+            watermarkDiv.classList.add('watermark');
+            watermarkDiv.innerText = watermark;
+            container.appendChild(watermarkDiv);
+        }
+    })
 }

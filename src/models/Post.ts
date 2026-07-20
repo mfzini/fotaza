@@ -21,7 +21,7 @@ import { Comment } from "./Comment.js";
 import { Rating } from "./Rating.js";
 import { Notification } from "./Notification.js";
 
-@Table
+@Table({paranoid: true})
 export class Post extends Model {
 
     @PrimaryKey
@@ -36,6 +36,14 @@ export class Post extends Model {
 
     @Column(DataType.STRING)
     declare desc: string;
+
+    @Default(true)
+    @Column(DataType.BOOLEAN)
+    declare isModifiable: boolean;
+
+    @Default(true)
+    @Column(DataType.BOOLEAN)
+    declare canBeCommented: boolean;
 
     @HasMany(() => File, { onDelete: 'CASCADE' })
     declare files: File[];
@@ -62,18 +70,6 @@ export class Post extends Model {
         return Post.findAll({
             include: [{ model: Tag }],
             where: { '$tags.tag$': { [Op.in]: tags } }
-        });
-    }
-
-    public static async fetchAllByPk(pk: string) {
-        return Post.findByPk(pk, {
-            include: [User, Tag, {
-                model: File,
-                include: [Rating, {
-                    model: Comment,
-                    include: [User]
-                }]
-            }]
         });
     }
 

@@ -1,0 +1,52 @@
+extends layout
+
+block head
+    link(rel="stylesheet", href="/style/moderation.css")
+    title Fotaza - Moderar
+block main
+    #principal
+        if user.isMod()
+            #viewBtns
+                button#commentsViewBtn(type="button").blue-button Comentarios
+                button#filesViewBtn(type="button").blue-button Imagenes
+        #commentsView
+            if  comments.length == 0
+                h2 Aquí no hay nada que ver.
+            for comment in comments
+                .reportedComment(id=comment.id)
+                    .commentHeader
+                        a(href=`/profile/${comment.authorId}`): h4 #{comment.author.username}:
+                        span #{new Date(comment.createdAt).toLocaleString('es')}
+                    .commentBody
+                        p #{comment.text}
+                        .commentFooter        
+                    .reportBtns.commentFooter
+                        button(type="button" data-target-id=comment.id).blue-button.dismissCommentReports Desestimar
+                        button(type="button" commandfor=`popover-${comment.id}` command='show-popover').blue-button Ver reportes
+                        button(type="button" data-target-id=comment.id).blue-button.deleteCommentBtn Eliminar
+                    div(id=`popover-${comment.id}` popover).modal
+                        for report in comment.reports
+                            .report
+                                .reportHeader
+                                    a(href=`/profile/${report.userId}`): span #{report.user.username}
+                                    span #{report.reason.reason}
+                                .reportBody: p #{report.desc}
+        if user.isMod()
+            #filesView(style='display: none')
+                if  files.length == 0
+                    h2 Aquí no hay nada que ver.
+                for file in files
+                    .reportedFile(id=file.id)
+                        img(src=file.location alt=file.originalName)
+                        .reportBtns
+                            button(type="button" data-target-id=file.id).blue-button.dismissFileReports Desestimar
+                            button(type="button" commandfor=`popover-${file.id}` command='show-popover').blue-button Ver reportes
+                            button(type="button" data-target-id=file.id).blue-button.strike Sancionar
+                        div(id=`popover-${file.id}` popover).modal
+                            for report in file.reports
+                                .report
+                                    .reportHeader
+                                        a(href=`/profile/${report.userId}`): span #{report.user.username}
+                                        span #{report.reason.reason}
+                                    .reportBody: p #{report.desc}
+    script(src="/script/mod.js") 

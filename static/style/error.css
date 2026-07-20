@@ -1,0 +1,11 @@
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: larger;
+    height: 800px;
+    p{
+        color: rgb(227, 128, 128);
+    }
+}

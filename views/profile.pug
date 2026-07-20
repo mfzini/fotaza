@@ -1,20 +1,38 @@
 extends layout
 include mixins/postCard
 block head
-    title Perfil de #{profile.username}
+    title Fotaza - Perfil de #{profile.username}
+    link(rel="stylesheet", href="/style/profile.css")
 block main
-    #profileHeader 
-        h1#userName #{profile.username}
-        if (user && !isOwn)
-            button#FollowBtn(type="button") #{`${isFollowing ? 'Dejar de seguir' : 'Seguir'}`}
+    #profileHeader(data-profile-id=`${profile.id}` data-followers-count=followers.count)
+        #userName
+            h1#userName Perfil de #{profile.username}
+        #profileBtns
+            button#followersBtn(type="button").blue-button Seguidores (#{followers.count})
+            if user
+                if !isOwn
+                    form(action=`/follow/${profile.id}`, method="post") 
+                        button#followBtn.blue-button(type="submit") #{`${isFollowing ? 'Dejar de seguir' : 'Seguir'}`}
+                else 
+                    button#editProfileBtn.blue-button(type="button") Configuración ⚙️
+            
     #principal
         #recientes
             h3 Recientes
             each p in recientes
                 +postCard(p)
+        #followersView
+            h3 #{followers.count == 0  ? 'Este usuario no tiene seguidores =(': 'Seguidores'}
+            #followers
+                for follow in followers.rows
+                        a(href=`/profile/${follow.user.id}`): .follower
+                            h4 #{follow.user.username}
+            
 
-        aside#valorados 
-            h3 Más votados
-            each p in votados
-                +postCard(p)
-    #profileId(style='display: none') #{profile.id}
+        if votados.length > 0
+            aside#valorados 
+                h3 Más votados
+                each p in votados
+                    +postCard(p)
+
+    script(src="/script/profile.js") 

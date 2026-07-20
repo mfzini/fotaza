@@ -2,11 +2,15 @@ import type { NextFunction, Request, Response } from 'express';
 import { upload } from '../config/s3.js';
 import { File } from '../models/File.js';
 import { Post, Tag } from '../models/Post.js';
-import { User } from '../models/User.js';
+import { Interest, User } from '../models/User.js';
 import type { UUID } from 'crypto';
 import { sha256 } from '../utils/sha256.js';
 import { sequelize } from '../config/db.js';
 import { normalize } from '../utils/sCleaner.js';
+import { Collection } from '../models/Collection.js';
+import { ReportComment, ReportFile, ReportReason } from '../models/Reports.js';
+import { Rating } from '../models/Rating.js';
+import { Comment } from '../models/Comment.js';
 
 export async function getCreatePost(req: Request, res: Response, next: NextFunction) {
     res.render('createPost');
@@ -25,12 +29,13 @@ export async function postCreatePost(req: Request, res: Response, next: NextFunc
         }, { transaction });
         for (let f of req.files as Express.Multer.File[]) {
             const hash = sha256(f.buffer);
-            const url = await upload(f, hash);
+            const location = await upload(f, hash);
             const mimetype: string = f.mimetype;
-            if (!url) return next(new Error("Algo malió sal."));
+            const originalName = f.originalname;
+            if (!location) return next(new Error("Algo malió sal."));
             const watermark = watermarks.get(hash);
             const r = await File.create({
-                hash, url, mimetype, watermark, postId: post.id
+                hash, location, mimetype, watermark, postId: post.id, originalName
             }, { transaction });
         }
 
@@ -53,7 +58,72 @@ export async function postCreatePost(req: Request, res: Response, next: NextFunc
 }
 
 export async function viewPost(req: Request, res: Response, next: NextFunction) {
+    const user: User = req.user as User;
     const id: string = req.params.id as string;
-    let posts = await Post.fetchAllByPk(id);
-    return res.render('post', posts?.toJSON());
+    if (!id) res.status(404).end();
+    let post;
+    post = await Post.findByPk(id, {
+        include: [
+            User,
+            Tag,
+            {
+                model: File,
+                include: [{ model: Rating, as: 'ratings' }, ...(user ? [{
+                    model: Interest,
+                    where: { userId: user.id },
+                    required: false
+                }] : []),
+                {
+                    model: Comment,
+                    order: [['createdAt', 'ASC']],
+                    include: [User, ...(user ? [{
+                        model: ReportComment,
+                        where: { userId: user.id },
+                        required: false
+                    }] : [])],
+                    separate: true
+                },
+                ...(user ? [{
+                    model: ReportFile,
+                    where: {
+                        userId: user.id
+                    },
+                    required: false
+                }] : [])
+                ]
+            }]
+    });
+
+    if (!post) return next(new Error("Post no encontrado."));
+    let collections, reportReasons;
+    const userId = (req.user as User)?.id;
+    if (userId) {
+        collections = await Collection.findAll({ where: { ownerId: userId }, attributes: ['id', 'name'] });
+        reportReasons = await ReportReason.findAll();
+    }
+    return res.render('post', { post, collections, reportReasons });
+}
+
+export async function deletePost(req: Request, res: Response, next: NextFunction) {
+    const user = req.user as User;
+    if (!user) return res.status(403).end();
+    const postId = req.params.id as string;
+    if (!postId) return res.status(400).end();
+    const post = await Post.findByPk(postId);
+    if (!post) return res.status(404).end();
+    if (post.authorId != user.id) return res.status(403).end();
+
+    await post.destroy();
+    return res.status(200).end();
+}
+
+export async function toggleComments(req: Request, res: Response, next: NextFunction) {
+    const userId = (req.user as User).id;
+    const postId = req.params.id as string;
+    const post = await Post.findByPk(postId);
+    if (!post) return res.status(404).end();
+    if (userId != post.authorId) return res.status(403).end();
+    post.canBeCommented = !post.canBeCommented;
+    await post.save();
+    return res.status(200).json({ newValue: post.canBeCommented });
 }

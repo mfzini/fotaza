@@ -1,0 +1,18 @@
+.unreaded {
+    background-color: rgba(40, 87, 137, 0.226);
+}
+#notificationsContainer {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.notification {
+    box-shadow: var(--black-shadow);
+    padding: 2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    &:hover {
+        box-shadow: var(--accent-shadow);
+    }
+}

@@ -1,9 +1,10 @@
 import type { NextFunction, Request, Response } from "express";
-import { Follow, User } from "../models/User.js";
+import { Follow, Interest, User } from "../models/User.js";
 import { Post, Tag } from "../models/Post.js";
 import { Rating } from "../models/Rating.js";
 import { col, fn } from "sequelize";
 import { File } from "../models/File.js";
+import { NoNotification } from "../utils/customErrors.js";
 
 export async function getProfile(req: Request, res: Response, next: NextFunction) {
     const user = req.user as User;
@@ -52,27 +53,44 @@ export async function getProfile(req: Request, res: Response, next: NextFunction
         });
 
     }
-    res.render('profile', { profile: profile?.toJSON(), isFollowing, isOwn, recientes, votados: top });
+    let followers = await Follow.findAndCountAll({ where: { targetId: profileId }, include: [{ model: User, as: 'user' }] });
+    res.render('profile', { profile: profile?.toJSON(), isFollowing, isOwn, recientes, votados: top, followers });
 
 }
 
 export async function follow(req: Request, res: Response, next: NextFunction) {
     const user = req.user as User;
+    if (!user) return res.status(403).end();
     const targetId = req.params.id as string;
-    if (user.id == targetId) {
-        return res.status(400).json({ message: 'No te podés seguir a vos mismo, ameo!' })
-    }
+    if (user.id == targetId) return res.status(400).end();
     const target = await User.findByPk(targetId);
-    if (!target) {
-        return res.status(404).json({ message: 'Usuario no encontrado.' })
-    }
+    if (!target) return res.status(404).end();
+
     let f = await Follow.findOne({ where: { userId: user.id, targetId } });
     if (f) {
         f.destroy();
-        return res.status(204).end();
+        return res.redirect(`/profile/${targetId}`);
     }
-    f = await Follow.create({
-        userId: user.id, targetId
-    });
-    res.status(200).end();
+    try {
+        f = await Follow.create({
+            userId: user.id, targetId
+        });
+    } catch (e: any) {
+        if (!(e instanceof NoNotification))
+            console.error(e);
+    }
+    return res.redirect(`/profile/${targetId}`);
+}
+export async function interested(req: Request, res: Response, next: NextFunction) {
+    const userId = (req.user as User).id;
+    const fileId = req.params.fileId;
+    try {
+        const interested = await Interest.create({
+            userId,
+            fileId
+        });
+        res.status(200).end();
+    } catch (e) {
+        res.status(500).end();
+    }
 }

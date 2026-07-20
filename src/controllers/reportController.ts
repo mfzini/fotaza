@@ -1,65 +1,142 @@
 import type { Request, Response, NextFunction } from 'express'
 import { File } from '../models/File.js'
 import { User } from '../models/User.js'
-import { Report } from '../models/File.js'
 import { Comment } from '../models/Comment.js';
+import { ReportComment, ReportFile } from '../models/Reports.js';
 import { Post } from '../models/Post.js';
 
-export async function reportFile(req: Request, res: Response, next: NextFunction) {
-    const userId = (req.user as User).id;
+export async function report(req: Request, res: Response, next: NextFunction) {
+    const { fileId, commentId } = req.body;
+    if (commentId) return reportAComment(req, res, next);
+    else if (fileId) return reportAFile(req, res, next);
+    else return res.status(400).end();
+}
 
-    const { fileId, reasonId, desc } = req.body;
-    if (!reasonId || !fileId) return res.status(400).end();
+async function reportAFile(req: Request, res: Response, next: NextFunction) {
+    const userId = (req.user as User).id;
+    const { postId, fileId, reason, desc } = req.body;
+    if (!reason) return res.status(400).end();
 
     const file = await File.findByPk(fileId, {include: [Post]});
     if (!file) return res.status(404).end();
-    if (file.post.authorId == userId) return res.status(400).end();
 
-    const exists = await Report.findOne({
-        where: {
-            fileId, userId
-        }
-    });
-    if (exists) return res.status(409).end();
+    if (file.post.authorId == userId) return res.status(403).end();
+
+    const cantBeReported = await ReportFile.findOne({ where: { fileId, userId } });
+    if (cantBeReported) return res.status(409).end();
 
     try {
-        const report = await Report.create({ userId, fileId, reasonId, desc });
-        res.status(201).json({ id: report.id, reason: reasonId });
-        next();
+        await ReportFile.create({ userId, fileId, reasonId: reason, desc });
     } catch (e) {
-        return res.status(500).json({ message: 'Algo malió sal creando el reporte.' });
         console.error(e);
+        return res.status(500).end();
     }
+    res.redirect(`/post/${postId}?file=${fileId}`);
 }
 
-export async function reportComment(req: Request, res: Response, next: NextFunction) {
+async function reportAComment(req: Request, res: Response, next: NextFunction) {
     const userId = (req.user as User).id;
-    const { commentId, reasonId, desc } = req.body;
+    const { postId, fileId, commentId, reason, desc } = req.body;
+    if (!reason) return res.status(400).end();
 
-    if (!commentId || !reasonId) return res.status(400).end();
+    const comment = await Comment.findByPk(commentId, {
+        include:
+        {
+            model: File, attributes: ['id'],
+            include: [{
+                model: Post,
+                attributes: ['id', 'authorId']
+            }]
+        }
+    });
+    if (!comment) return res.status(404).end();
+    if (comment.authorId == userId || comment.authorId == comment.file.post.authorId)
+        return res.status(400).end();
+    const cantBeReported = await ReportComment.findOne({ where: { commentId, userId } });
+    if (cantBeReported) return res.status(409).end();
+    try {
+        await ReportComment.create({ userId, commentId, reasonId: reason, desc });
+    } catch (e) {
+        console.error(e);
+        return res.status(500).end();
+    }
+    res.redirect(`/post/${postId}?file=${fileId}`);
+}
 
+export async function dismissCommentReport(req: Request, res: Response, next: NextFunction) {
+    const user = req.user as User;
+    const commentId = req.params.commentId as string;
     const comment = await Comment.findByPk(commentId, {
         include: [{
             model: File,
             include: [Post]
+        }, {
+            model: ReportComment,
+            where: {
+                commentId,
+                isActive: true
+            }
         }]
     });
     if (!comment) return res.status(404).end();
-    if (comment.authorId == userId || comment.authorId == comment.file.post.authorId) return res.status(400).end();
+    const isAllowed = user.isMod() || user.id == comment.file.post.authorId;
+    if (!isAllowed) return res.status(403).end();
 
-    const exists = await Report.findOne({
+    const promises: Promise<ReportComment>[] = [];
+
+    comment.reports.forEach(report => {
+        report.isActive = false;
+        promises.push(report.save());
+    });
+    await Promise.all(promises);
+    res.status(200).end();
+}
+
+export async function dismissFileReport(req: Request, res: Response, next: NextFunction) {
+    const user = req.user as User;
+    const fileId = req.params.fileId as string;
+    const file = await File.findByPk(fileId, {
+        include: [{
+            model: ReportFile,
+            where: { isActive: true }
+        }]
+    });
+    if (!file) return res.status(404).end();
+    if (!user.isMod()) return res.status(403).end();
+    const promises: Promise<ReportFile>[] = [];
+    file.reports.forEach(report => {
+        report.isActive = false;
+        promises.push(report.save());
+    })
+    await Promise.all(promises);
+    res.status(200).end();
+}
+
+
+export async function handleFileReport(req: Request, res: Response, next: NextFunction) {
+    const user = req.user as User;
+    if (!user.isMod()) return res.status(403).end();
+    const fileId = req.params.fileId as string;
+
+    const file = await File.findByPk(fileId, { include: [{ model: Post, include: [User] }] });
+    if (!file) return res.status(404).end();
+    const { author } = file.post;
+    author.strikes++;
+    await author.save();
+
+    const promises: Promise<ReportFile>[] = [];
+    const reports = await ReportFile.findAll({
         where: {
-            userId, commentId
+            fileId,
+            isActive: true
         }
     });
-    if (exists) return res.status(409).end();
+    reports.forEach(report => {
+        report.isActive = false;
+        promises.push(report.save());
+    });
 
-    try {
-        const report = await Report.create({ userId, commentId, reasonId, desc });
-        res.status(201).json({ id: report.id, reason: reasonId });
-        next();
-    } catch (e) {
-        return res.status(500).json({ message: 'Algo malió sal creando el reporte.' });
-        console.error(e);
-    }
+    await Promise.all(promises);
+    await file.post.destroy();
+    res.status(200).end();
 }

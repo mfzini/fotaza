@@ -1,0 +1,65 @@
+extends layout 
+
+block head
+    title Fotaza - Mail
+    link(rel="stylesheet", href="/style/mail.css")
+block main
+    #mailMenu
+        button#inBtn(type="button").blue-button 📥 Recibidos
+        button#outBtn(type="button").blue-button 📤 Enviados
+        button#writeBtn(type="button").blue-button 📝 Redactar
+
+    #in.table
+        .thead.tr
+            .th Asunto
+            .th Remitente
+            .th Fecha
+        for m in inbox
+            .tr(id=m.id class=`${!m.readed ? 'unreaded' : ''} messageRow`
+                data-sender=`${m.from.username}`
+                data-sender-id=m.from.id
+                data-subject=`${m.subject}`
+                data-created-at=`${new Date(m.createdAt).toLocaleString('es')}`
+                data-message=`${m.message}`)
+                .td #{m.subject}
+                .td #{m.from.username}
+                .td #{`${new Date(m.createdAt).toLocaleString('es')}`}
+    #out.table(style='display: none')
+        .thead.tr
+            .th Asunto
+            .th Destinatario
+            .th Fecha
+            .th  
+        for m in outbox
+            .tr(id=m.id data-sender=`${m.to.username}` data-subject=`${m.subject}` data-created-at=`${new Date(m.createdAt).toLocaleString('es')}` data-message=`${m.message}`).messageRow
+                .td #{m.subject}
+                .td #{m.to.username}
+                .td #{`${new Date(m.createdAt).toLocaleString('es')}`}
+    #writePopover(popover).modal
+        h2 Enviar mensaje
+        form(action="/mail", method="post") 
+            label(for="to") Destinatario:
+            input#inputTo(type="text", name="to")
+
+            label(for='subject', name='subject') Asunto: 
+            input#inputSubject(type="text" name='subject')
+            label(for='message') Mensaje:
+            textarea#inputMessage(name="message") 
+            
+            button#submitBtn(type="button").blue-button Enviar 📨
+
+    #messagePopover(popover).modal
+        h2#subject
+        .sender
+            span Remitente:
+            p#sender
+        .createdAt
+            span Fecha: 
+            p#createdAt
+        .message
+            p#message
+        .buttons
+            //button#deleteMailBtn(type='button').blue-button Eliminar
+            button#reBtn(type="button").blue-button Responder
+    script(src="/script/mail.js") 
+

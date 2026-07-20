@@ -1,25 +1,36 @@
 import { Sequelize } from "sequelize-typescript";
-import { Follow, User } from "../models/User.js";
+import { Follow, Interest, User } from "../models/User.js";
 import { Post, Tag, PostTags } from "../models/Post.js";
-import { File, Report, ReportReason } from "../models/File.js";
+import { File } from "../models/File.js";
 import { Comment } from "../models/Comment.js";
 import { Rating } from "../models/Rating.js";
 import { Notification } from "../models/Notification.js";
+import { Collection, CollectionPost } from "../models/Collection.js";
+import { ReportComment, ReportFile, ReportReason } from "../models/Reports.js";
+import { Mail } from "../models/Mail.js";
+import { Role, UserRole } from "../models/Role.js";
 
 export const sequelize: Sequelize = new Sequelize(process.env.DB_URL!, {
   logging: false,
   models: [
     User,
+    Role,
+    UserRole,
     Follow,
     Post,
     PostTags,
     File,
+    Interest,
     Tag,
     Comment,
     Rating,
-    Report,
+    ReportReason,
+    ReportFile,
+    ReportComment,
     Notification,
-    ReportReason
+    Collection,
+    CollectionPost,
+    Mail
   ],
 });
 

@@ -29,13 +29,15 @@ export class Rating extends Model {
     @AfterCreate
     static async notify(r: Rating) {
         const u = await r.$get('user');
-        const p = await r.$get('file').then(f => f?.$get('post'));
+        const f = await r.$get('file');
+        const p = await f?.$get('post');
+        if (u?.id == p?.authorId) return;
         const t = await p?.$get('author');
 
         await Notification.create({
             message: `${u?.username} ha calificado un archivo que publicaste.`,
-            target: t?.id,
-            href: `/post/${p?.id}`
+            userId: t?.id,
+            href: `/post/${p?.id}?file=${f?.id}`
         });
     }
 }

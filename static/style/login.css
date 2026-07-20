@@ -1,9 +1,16 @@
 #container {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     width: 100%;
     min-height: 54vh;
+    gap: 1rem;
+}
+.errors {
+    padding: 1rem;
+    color: rgb(255, 95, 95);
+    font-size: larger;
 }
 
 #loginForm, #signUpForm {
@@ -61,7 +68,7 @@
     }
 }
 
-#error {
+.error {
     font-size: 1.3rem;
     color: rgb(255, 47, 47);
 }

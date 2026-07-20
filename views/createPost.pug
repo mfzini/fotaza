@@ -2,7 +2,7 @@ extends layout
 
 block head 
     link(rel="stylesheet", href="../style/createPost.css")
-    title Publicar
+    title Fotaza - Publicar
 block main
     form#postForm(action="/post/create", method="post", enctype='multipart/form-data')
         label(for="title") Título
@@ -11,7 +11,7 @@ block main
             textarea.userInput#desc(name="desc", maxlength='250', rows='3',  value=desc)
         label(for="tags") Etiquetas
             input.userInput(type="text", name="tags", value=tags required)
-        label#add-files-btn(for="files") Seleccionar Archivos
+        label#add-files-btn.blue-button(for="files") Seleccionar Archivos
             input#files(type="file", name="files", accept="image/*,video/*", multiple, style="display: none")
         #preview
     
@@ -19,9 +19,9 @@ block main
             ul#err
                 each e in err
                     li=e 
-        button#submit(type="submit") Publicar
+        button#submit.blue-button(type="submit") Publicar
 
-    #config-popover(popover)
+    #config-popover(popover).modal
         #wea
             #popover-file-name
             label(for="watermark") Marca de agua: 

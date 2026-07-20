@@ -1,0 +1,14 @@
+extends layout
+
+block head
+    title Fotaza - Notificaciones
+    link(rel="stylesheet", href="/style/notifications.css")
+
+block main
+    h1 Notificaciones
+    #notificationsContainer
+        for notification in notifications
+            a(href=`${notification.href}`): .notification(id=`${notification.id}` class=`${!notification.seen ? 'unreaded' : '' }`)
+                p #{notification.message}
+
+    script(src="/script/notifications.js") 

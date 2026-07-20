@@ -11,6 +11,9 @@ import { setUserContext } from '../middleware/setUserContext.js';
 export const server = express();
 const [storageDomain] = process.env.S3_BUCKET!.split('/storage');
 const mediaDirectives = ["'self'", "data:", "blob:", storageDomain ?? '']
+server.use(express.static(path.join(import.meta.dirname, '..', '..', 'static')));
+server.set('view engine', 'pug');
+server.set('views', path.join(import.meta.dirname, "..", "..", 'views'));
 server.use(helmet({
     contentSecurityPolicy: {
         directives: {
@@ -39,9 +42,7 @@ server.use(passport.session());
 
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
-server.use(express.static(path.join(import.meta.dirname, '..', '..', 'static')));
-server.set('view engine', 'pug');
-server.set('views', path.join(import.meta.dirname, "..", "..", 'views'));
+
 server.use(setUserContext)
 server.use(mainRouter);
 server.use(catchAll);

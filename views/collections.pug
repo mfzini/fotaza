@@ -1,0 +1,29 @@
+extends layout 
+
+block head
+    title Fotaza - Mis Colecciones
+    link(rel="stylesheet", href="/style/collections.css")
+block main
+    .head
+        h1 Colecciones
+        button.blue-button(popovertarget='collectionPopover') Crear nueva 🗂️
+    .body 
+        for collection in collections 
+            .collection(data-id=`${collection.id}` data-name=`${collection.name}`)
+                h2: a(href=`/collections/${collection.id}`) #{collection.name}
+                .buttons
+                    if !collection.isFavorite
+                        button.renameBtn(type="button").blue-button Renombrar ✏️
+                        button.deleteBtn(type="button").blue-button Eliminar ❌
+    
+
+
+    #collectionPopover.modal(popover)
+        h2 Crear nueva
+        form(action="/collections") 
+            input#inputId(type="hidden", name="id")
+            label(for="name") Nombre:
+            input#inputName(type="text", name="name")
+            button#submitBtn.blue-button(type="submit") Guardar 💾
+    
+    script(src="/script/collections.js") 

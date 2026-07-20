@@ -1,20 +1,23 @@
 extends layout 
 include mixins/postCard
-
+block head
+    title Fotaza - Busqueda
+    link(rel="stylesheet", href="/style/search.css")
 block main 
     #resultados
-        h2 Resultados de la busqueda:
-
-        if (resultados.length == 0) 
+        h1 Resultados de la busqueda:
+        if (users.length == 0 && posts.length == 0) 
             h1 No hay resultados!
-
-        else if (option == 'username')
-            each u in resultados
-                .userCard
-                    a(href=`/profile/${u.id}`): h3 #{u.username}
         else
-            each p in resultados
-                +postCard(p)
-        
-        
+            if (users.length > 0)
+                h2 Usuarios:
+                #users
+                    each u in users
+                        .userCard
+                            a(href=`/profile/${u.id}`): h3 #{u.username}
+            if (posts.length > 0)
+                h2 Publicaciones:
+                #posts
+                    each p in posts
+                        +postCard(p)
         

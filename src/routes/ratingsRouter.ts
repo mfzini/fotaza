@@ -1,4 +1,4 @@
-import express, { Router } from 'express';
+import express from 'express';
 import { getRatings, postRating } from '../controllers/ratingController.js';
 import { isAuthenticated } from '../middleware/auth.middleware.js';
 

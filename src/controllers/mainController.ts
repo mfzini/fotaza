@@ -4,7 +4,6 @@ import { Post, Tag } from "../models/Post.js";
 import { File } from '../models/File.js'
 import { col, fn } from "sequelize";
 import { Rating } from "../models/Rating.js";
-import { notify } from "../utils/sendNotifications.js";
 
 export async function getHome(req: Request, res: Response) {
     const recientes = await Post.findAll({
@@ -35,6 +34,6 @@ export async function getHome(req: Request, res: Response) {
 }
 
 export async function catchAll(err: any, req: Request, res: Response, next: NextFunction) {
-    console.error(err);
-    res.send(err.message);
+    if (res.statusCode != 404) console.error(err);
+    res.render('error', {err});
 }

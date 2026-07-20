@@ -1,6 +1,8 @@
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { User } from '../models/User.js';
+import { Role } from '../models/Role.js';
+import { Op } from 'sequelize';
 
 passport.use(
     new LocalStrategy({
@@ -12,7 +14,9 @@ passport.use(
             try {
                 const user = await User.findOne({
                     where: {
-                        email
+                        email: {
+                            [Op.iLike]: email
+                        }
                     }
                 })
                 if (!user) {
@@ -34,7 +38,11 @@ passport.serializeUser((user: any, done) => {
 
 passport.deserializeUser(async (id: string, done) => {
     try {
-        const user = await User.findByPk(id);
+        const user = await User.findByPk(id, { include: [Role] });
+        if (!user) throw new Error('User not found');
+        if (user.strikes > 2) {
+            throw new Error("Estas baneado, ameo");
+        }
         done(null, user);
     } catch (err) {
         done(err);

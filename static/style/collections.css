@@ -1,0 +1,28 @@
+.head {
+    text-align: center;
+    button {
+        margin: 0.5rem 0;
+    }
+}
+
+.body {
+    width: 100%;
+}
+
+.collection {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    margin: 0.5rem auto;
+    box-shadow: var(--black-shadow);
+    border: var(--input-border);
+    
+    .buttons {
+        display: flex;
+        gap: 0.5rem;
+        
+    }
+}
