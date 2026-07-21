@@ -26,7 +26,7 @@ export async function markAsReaded(req: Request, res: Response, next: NextFuncti
     const mail = await Mail.findByPk(id);
     if (!mail) return res.status(404).end();
     if (mail.toId != user.id) return res.status(403).end();
-    /* mail.readed = true;
-    await mail.save(); */
+    mail.readed = true;
+    await mail.save();
     res.status(200).end();
 }
