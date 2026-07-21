@@ -75,7 +75,7 @@ block main
                     if user
                         form#postComment(action=`/post/${post.id}?file=${file.id}`, method="post", style=`display: ${post.canBeCommented ? 'flex' : 'none'}`) 
                             textarea#comment(name="text", placeholder='Deja un commentario.' required)
-                            button(type="submit") ⮞
+                            button#submitComment(type="submit") ⮞
         if post.files.length > 1
             button#btn_n.gbtns(type="button") #{'>'}
 

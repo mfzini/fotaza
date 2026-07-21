@@ -14,7 +14,7 @@ document.addEventListener('click', (e) => {
 
 
 function getUserId() {
-  return document.querySelector('nav').dataset.userId;
+    return document.querySelector('nav').dataset.userId;
 }
 
 
@@ -26,3 +26,10 @@ function createButton(className, textContent, onclick) {
     btn.addEventListener('click', onclick)
     return btn;
 }
+
+
+document.addEventListener('submit', e => {
+    e.target.querySelector('[type="submit"]').disabled = true;
+});
+
+

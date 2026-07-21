@@ -11,7 +11,7 @@ files[i].style.display = 'inline-block';
         const popover = document.getElementById('interestedPopover');
         popover.showPopover();
         const fileId = files[i].id;
-        const res = await fetch(`/interested/${fileId}`, {method: 'POST'});
+        const res = await fetch(`/interested/${fileId}`, { method: 'POST' });
         if (res.status != 200) return;
         document.getElementById(`interested-${fileId}`).remove();
         setInterval(() => popover.hidePopover(), 5000);
@@ -128,7 +128,7 @@ if (getUserId()) {
         const watermark = f.dataset.watermark;
         const container = f.querySelector('.mediaContainer')
         if (watermark) {
-            ['mousedown','contextmenu'].forEach(event => {
+            ['mousedown', 'contextmenu'].forEach(event => {
                 container.addEventListener(event, e => e.preventDefault());
             });
             const watermarkDiv = document.createElement('div');
