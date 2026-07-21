@@ -4,8 +4,8 @@ import { Notification } from '../models/Notification.js';
 
 export async function notificationsView(req: Request, res: Response, next: NextFunction) {
     const user = req.user as User;
-    const unreaded = await Notification.findAll({ where: { userId: user.id, seen: false } });
-    const readed = await Notification.findAll({ where: { userId: user.id, seen: true } });
+    const unreaded = await Notification.findAll({ where: { targetId: user.id, seen: false } });
+    const readed = await Notification.findAll({ where: { targetId: user.id, seen: true } });
     res.render('notifications', { notifications: [...unreaded, ...readed] });
 }
 
