@@ -1,6 +1,6 @@
 mixin postCard(p)
     .postCard(id=`${p.id}`)
-        .postCardHeader
+        a(href=`/post/${p.id}`): .postCardHeader
             h4= p.title
             .postCardCreatedAt: span= new Date(p.createdAt).toLocaleDateString('es-AR')
         .postCardFooter
