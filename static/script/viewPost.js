@@ -128,8 +128,9 @@ if (getUserId()) {
         const watermark = f.dataset.watermark;
         const container = f.querySelector('.mediaContainer')
         if (watermark) {
-            ['mousedown','contextmenu'].forEach(event => f.addEventListener(event, e => e.preventDefault()));
-            f.addEventListener('mousedown', e => e.preventDefault());
+            ['mousedown','contextmenu'].forEach(event => {
+                container.addEventListener(event, e => e.preventDefault());
+            });
             const watermarkDiv = document.createElement('div');
             watermarkDiv.classList.add('watermark');
             watermarkDiv.innerText = watermark;
