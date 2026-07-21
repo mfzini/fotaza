@@ -8,12 +8,16 @@ const reBtn = document.getElementById('reBtn');
         const createdAtField = document.getElementById('createdAt');
         const messageField = document.getElementById('message');
         const { createdAt, sender, message, subject, senderId } = r.dataset;
+        const mail = document.getElementById(`${r.id}`);
         r.classList.remove('new');
         if (getUserId() != senderId) {
             fetch(`/mail/${r.id}`, { method: 'PATCH' });
-
+            const unreadedMailCount = document.getElementById('unreadedMailCount');
+            unreadedMailCount.dataset.unreadedMailCount--;
+            if (unreadedMailCount.dataset.unreadedMailCount == 0) {
+                unreadedMailCount.remove();
+            }
         }
-        const mail = document.getElementById(`${r.id}`);
         mail.classList.remove('unreaded');
         senderField.innerText = sender;
         subjectField.innerText = subject;

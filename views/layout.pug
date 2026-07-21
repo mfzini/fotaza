@@ -33,7 +33,7 @@ html(lang="es")
                         li: a(href='/collections') 🗂️
                         li: a(href='/mail') ✉️
                             if unreadedMailCount > 0
-                                #unreadedMailCount.notificationsCount: span #{unreadedMailCount}
+                                #unreadedMailCount(data-unreaded-mail-count=unreadedMailCount).notificationsCount: span #{unreadedMailCount}
                         li: a(href="/profile") 👤
                         li: form(action="/logout", method="post"): button(type="submit") 🚪
                     else
