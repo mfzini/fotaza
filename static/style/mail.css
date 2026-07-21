@@ -89,3 +89,7 @@
 #createdAt {
     text-align: end;
 }
+#errMessage {
+    color: rgb(237, 101, 101);
+    text-align: center;
+}

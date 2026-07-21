@@ -201,6 +201,7 @@ textarea {
 
     &:hover {
         box-shadow: 0 0 5px #0860f2;
+        cursor: pointer;
     }
 
     .postCardHeader {
@@ -219,6 +220,9 @@ textarea {
 
         .postCardAuthor {
             width: 100%;
+        }
+        .tag:not(:last-child)::after {
+            content: ', ';
         }
     }
 

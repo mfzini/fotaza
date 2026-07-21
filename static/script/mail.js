@@ -13,7 +13,9 @@ const reBtn = document.getElementById('reBtn');
         if (getUserId() != senderId) {
             fetch(`/mail/${r.id}`, { method: 'PATCH' });
             const unreadedMailCount = document.getElementById('unreadedMailCount');
+            console.log(unreadedMailCount)
             unreadedMailCount.dataset.unreadedMailCount--;
+            unreadedMailCount.innerText = unreadedMailCount.dataset.unreadedMailCount;
             if (unreadedMailCount.dataset.unreadedMailCount == 0) {
                 unreadedMailCount.remove();
             }
@@ -53,6 +55,7 @@ const input_subject = document.getElementById('inputSubject');
 const input_message = document.getElementById('inputMessage');
 submitBtn.addEventListener('click', async e => {
     e.preventDefault();
+    //errMessages.querySelectorAll('p').forEach(p => p.remove());
     const to = input_to.value;
     const subject = input_subject.value;
     const message = input_message.value;
@@ -65,11 +68,20 @@ submitBtn.addEventListener('click', async e => {
         input_subject.value = '';
         input_message.value = '';
         return window.location.reload();
-
-    } else if (r.status == 404) {
-        const errMessage = document.createElement('p');
-        errMessage.innerText = 'No se encotró el usuario.'
-        writePopover.appendChild(errMessage);
+    }
+    const errMessage = document.getElementById('errMessage');
+    switch (r.status) {
+        case 404:
+            errMessage.innerText = 'No se encotró el usuario.';
+            break;
+        case 400:
+            errMessage.innerText = 'Todos los campos son obligatorios.'
+            break;
+        case 403:
+            errMessage.innerText = 'No te podes enviar mensajes a vos mismo.';
+            break;
+        default:
+            errMessage.innerText = 'Algo salió mal. Inténtelo nuevamente más tarde.';
     }
 });
 

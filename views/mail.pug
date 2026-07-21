@@ -39,14 +39,15 @@ block main
         h2 Enviar mensaje
         form(action="/mail", method="post") 
             label(for="to") Destinatario:
-            input#inputTo(type="text", name="to")
+            input#inputTo(type="text", name="to", required)
 
             label(for='subject', name='subject') Asunto: 
-            input#inputSubject(type="text" name='subject')
+            input#inputSubject(type="text" name='subject', required)
             label(for='message') Mensaje:
-            textarea#inputMessage(name="message") 
+            textarea#inputMessage(name="message", required) 
             
             button#submitBtn(type="button").blue-button Enviar 📨
+            p#errMessage
 
     #messagePopover(popover).modal
         h2#subject

@@ -11,12 +11,15 @@ export async function mailView(req: Request, res: Response, next: NextFunction) 
 }
 
 export async function sendMail(req: Request, res: Response, next: NextFunction) {
-    const fromId = (req.user as User).id;
+    const user = req.user as User;
     let { to, subject, message } = req.body;
+    if (to.toLowerCase() == user.username.toLocaleLowerCase()) return res.status(403).end();
+    if (!subject || !message || !to) return res.status(400).end();
     to = await User.findOne({ where: { username: to } });
     if (!to) return res.status(404).end();
+    
     await Mail.create({
-        fromId, toId: to.id, subject, message
+        fromId: user.id, toId: to.id, subject, message
     });
     res.status(201).end();
 }

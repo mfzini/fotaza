@@ -1,13 +1,16 @@
 mixin postCard(p)
-    .postCard(id=`${p.id}`)
-        .postCardHeader
-            a(href=`/post/${p.id}`)
+    a(href=`/post/${p.id}`)
+        .postCard(id=`${p.id}`)
+            .postCardHeader
                 h4= p.title
-            .postCardCreatedAt: span= new Date(p.createdAt).toLocaleDateString('es-AR')
-        .postCardFooter
-            if p.author
-                .postCardAuthor: span Publicado por: 
-                    a(href=`/profile/${p.author.id}`)= p.author.username
-        .postTags
-            span tags: 
-                =p.tags.map(t => t.tag).join(', ')
+                .postCardCreatedAt: span= new Date(p.createdAt).toLocaleDateString('es-AR')
+            .postCardFooter
+                if p.author
+                    .postCardAuthor: span Publicado por: 
+                        a(href=`/profile/${p.author.id}`)= p.author.username
+            .postTags
+                div
+                span tags: 
+                    for tag in p.tags
+                        a(href=`/search/?tags=on&q=${tag.tag}`): span.tag=tag.tag
+                
