@@ -69,7 +69,7 @@ block main
                                     .commentBtns
                                         if comment.authorId != post.authorId && comment.authorId != user.id && comment.reports.length == 0
                                             span.reportCommentBtn(data-comment-id=comment.id) Reportar
-                                        if user.id == post.authorId
+                                        if user.id == post.authorId || user.isMod()
                                             span.deleteCommentBtn(data-comment-id=comment.id) Eliminar
                                             
                     if user

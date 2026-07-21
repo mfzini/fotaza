@@ -4,9 +4,9 @@ import { Mail } from '../models/Mail.js';
 
 export async function mailView(req: Request, res: Response, next: NextFunction) {
     const userId = (req.user as User).id;
-    let inbox = await Mail.findAll({ where: { toId: userId }, include: ['from'] });
+    let inbox = await Mail.findAll({ where: { toId: userId }, include: ['from'], order: [['createdAt', 'ASC']] });
 
-    let outbox = await Mail.findAll({ where: { fromId: userId }, include: ['to'] });
+    let outbox = await Mail.findAll({ where: { fromId: userId }, include: ['to'], order: [['createdAt', 'ASC']] });
     res.render('mail', { inbox, outbox });
 }
 
