@@ -11,8 +11,10 @@ block main
                 a(href=`/profile/${post.author.id}`): span #{`${post.author.username}`}
                 span #{` el ${new Date(post.createdAt).toLocaleDateString('es-AR')}`}
         if user
-            if post.authorId == user.id
-                .authorBtns
+            .postBtns
+                if collections.length > 0
+                    button(type="button" commandfor='addToCollectionPopover' command='show-popover').blue-button Agregar a una colección
+                if post.authorId == user.id
                     button#toggleCommentsBtn(type='button' data-can-be-commented=`${post.canBeCommented}`).blue-button
                         | #{post.canBeCommented ? 'Cerrar comentarios' : 'Abrir Comentarios'}
                     button#deletePostBtn(type="button").blue-button ❌ Eliminar
@@ -96,11 +98,11 @@ block main
                     textarea#reportDesc(name="desc")
                 section
                     button#sendReportBtn(type='submit').blue-button Enviar reporte
-
+        
         #addToCollectionPopover(popover).modal
             .modalContent
                 h2 Agregar a una colección
-                formocu
+                form(action=`/collections/${post.id}`, method="post") 
                     section
                         label(for='collection') Colección
                         select#collectionId(name='collectionId')

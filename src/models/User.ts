@@ -130,10 +130,9 @@ export class Follow extends Model {
     @AfterCreate
     static async notify(f: Follow) {
         const u = await f.$get('user');
-        const t = await f.$get('target')
         await Notification.create({
             message: `${u?.username} te está siguiendo`,
-            userId: t?.id,
+            userId: f.targetId,
             href: `/profile/${u?.id}`
         });
     }

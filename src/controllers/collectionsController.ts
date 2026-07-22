@@ -58,25 +58,31 @@ export async function getCollection(req: Request, res: Response, next: NextFunct
 }
 
 export async function collectionAddPost(req: Request, res: Response, next: NextFunction) {
-    const collectionId = req.params.id as string;
-    const { postId } = req.body;
+    const postId = req.params.id as string;
+    const { collectionId } = req.body;
     const user = req.user as User;
     const collection = await Collection.findOne({ where: { id: collectionId } });
     const post = await Post.findByPk(postId);
-    if (!collection || !post) return res.status(404).end();
-    if (collection?.ownerId != user.id) return res.status(403).end();
+    if (!collection || !post) {
+        res.status(404);
+        return next(new Error('No es posible encontrar uno de los recursos solicitados.'));
+    }
+
     const n = await CollectionPost.count({
         where: {
             collectionId,
             postId
         }
     });
-    if (n > 0) return res.status(400).end();
+    if (n > 0) {
+        res.status(400);
+        return next("Ese post ya se encuentra en esa colleción.");
+    }
 
     await collection.$add('posts', post);
-    res.status(200).end();
-
+    res.redirect(`/post/${postId}`);
 }
+
 export async function collectionRemovePost(req: Request, res: Response, next: NextFunction) {
     const collectionId = req.params.id as string;
     const { postId } = req.body;

@@ -5,6 +5,7 @@ block head
     title Fotaza - Moderar
 block main
     #principal
+        h1 Panel de moderación
         if user.isMod()
             #viewBtns
                 button#commentsViewBtn(type="button").blue-button Comentarios

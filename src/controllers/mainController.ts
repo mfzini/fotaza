@@ -34,6 +34,6 @@ export async function getHome(req: Request, res: Response) {
 }
 
 export async function catchAll(err: any, req: Request, res: Response, next: NextFunction) {
-    if (res.statusCode != 404) console.error(err);
+    console.error(err);
     res.render('error', {err});
 }

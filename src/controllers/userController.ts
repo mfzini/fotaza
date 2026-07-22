@@ -65,7 +65,6 @@ export async function follow(req: Request, res: Response, next: NextFunction) {
     if (user.id == targetId) return res.status(400).end();
     const target = await User.findByPk(targetId);
     if (!target) return res.status(404).end();
-
     let f = await Follow.findOne({ where: { userId: user.id, targetId } });
     if (f) {
         f.destroy();
@@ -73,7 +72,7 @@ export async function follow(req: Request, res: Response, next: NextFunction) {
     }
     try {
         f = await Follow.create({
-            userId: user.id, targetId
+            userId: user.id, targetId: target.id
         });
     } catch (e: any) {
         if (!(e instanceof NoNotification))

@@ -36,7 +36,7 @@
     margin: 1rem 0;
     gap: 1rem;
 
-    .authorBtns {
+    .postBtns {
         display: flex;
         gap: 1rem;
     }

@@ -7,10 +7,11 @@ import type { UUID } from 'crypto';
 import { sha256 } from '../utils/sha256.js';
 import { sequelize } from '../config/db.js';
 import { normalize } from '../utils/sCleaner.js';
-import { Collection } from '../models/Collection.js';
+import { Collection, CollectionPost } from '../models/Collection.js';
 import { ReportComment, ReportFile, ReportReason } from '../models/Reports.js';
 import { Rating } from '../models/Rating.js';
 import { Comment } from '../models/Comment.js';
+import { Op } from 'sequelize';
 
 export async function getCreatePost(req: Request, res: Response, next: NextFunction) {
     res.render('createPost');
@@ -98,7 +99,16 @@ export async function viewPost(req: Request, res: Response, next: NextFunction) 
     let collections, reportReasons;
     const userId = (req.user as User)?.id;
     if (userId) {
-        collections = await Collection.findAll({ where: { ownerId: userId }, attributes: ['id', 'name'] });
+        collections = await Collection.findAll({
+            where: {
+                ownerId: userId, id: {
+                    [Op.notIn]: (await CollectionPost.findAll({
+                        attributes: ['collectionId'],
+                        where: { postId: id },
+                    })).map((cp) => cp.collectionId),
+                },
+            }, attributes: ['id', 'name']
+        });
         reportReasons = await ReportReason.findAll();
     }
     return res.render('post', { post, collections, reportReasons });
