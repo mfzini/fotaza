@@ -59,6 +59,7 @@ block main
                                     button(type="button").blue-button.reportFileBtn Reportar
                                 if file.interestedList.length == 0
                                     button(id=`interested-${file.id}` type="button").blue-button.interestedBtn Me interesa
+                                button.shareBtn(type="button" data-file-id=file.id).blue-button Compartir
                     for comment in file.comments
                         .comment(id=comment.id)
                             .commentHeader
@@ -125,6 +126,9 @@ block main
             .popoverBtns
                 button(type="button" commandfor='deleteCommentPopover' command='hide-popover').blue-button Cancelar 
                 button#confirmDeleteCommentBtn(type="button").blue-button  Eliminar
+
+    #sharePopover(popover).modal
+        h3 Enlace copiado al portapapeles.
 
 
     script(type='module', src="/script/viewPost.js") 

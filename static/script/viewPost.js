@@ -138,3 +138,17 @@ if (getUserId()) {
         }
     })
 }
+
+document.querySelectorAll('.shareBtn').forEach(btn => btn.addEventListener('click', async e => {
+    try {
+        const url = `${window.location.origin}/post/${postData.id}?file=${e.currentTarget.dataset.fileId}`;
+        navigator.clipboard.writeText(url);
+        const popover = document.getElementById('sharePopover');
+        popover.showPopover();
+        setTimeout(() => {
+            popover.hidePopover();
+        }, 2000);
+    } catch (err) {
+        console.error(err);
+    }
+}));

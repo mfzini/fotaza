@@ -14,9 +14,9 @@ export async function makeComment(req: Request, res: Response, next: NextFunctio
         include: [Post]
     });
     if (!file) return res.status(404).end();
-    if (!file.post.canBeCommented) return res.status(403).end();
+    if (!file.post.canBeCommented) return res.redirect(`${req.url}`);
     const comment = await Comment.create({ authorId, fileId, text });
-    res.redirect(`${req.url}#${comment.id}`);
+    res.redirect(`${req.url}?file=${fileId}&#${comment.id}`);
 }
 
 export async function deleteComment(req: Request, res: Response, next: NextFunction) {
