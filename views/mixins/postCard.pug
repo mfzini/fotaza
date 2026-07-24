@@ -1,15 +1,24 @@
 mixin postCard(p)
     .postCard(id=`${p.id}`)
-        a(href=`/post/${p.id}`): .postCardHeader
-            h4= p.title
-            .postCardCreatedAt: span= new Date(p.createdAt).toLocaleDateString('es-AR')
-        .postCardFooter
-            if p.author
-                .postCardAuthor: span Publicado por: 
-                    a(href=`/profile/${p.author.id}`)= p.author.username
+        .postCardHeader
+            .postCardTitle
+                h2 #{p.title}
+            .postCardData
+                if p.author
+                    .postCardAuthor
+                        span Publicado por: 
+                            a(href=`/profile/${p.author.id}`)= p.author.username
+                .postCardCreatedAt: span= new Date(p.createdAt).toLocaleDateString('es-AR')
+        .postCardMiniatures
+            if p.files
+                each file in p.files
+                    if file.mimetype.startsWith('image')
+                        img(src=file.location, alt=file.originalName)
+                    else if file.mimetype.startsWith('video')
+                        video(src=file.location) 
         .postTags
             div
             span tags: 
                 for tag in p.tags
-                    a(href=`/search/?tags=on&q=${tag.tag}`): span.tag=tag.tag
+                    a(href=`/search/?tags=on&q=${tag.tag}`).tag: span #{tag.tag}
                 

@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { User } from "../models/User.js";
 import { Collection, CollectionPost } from "../models/Collection.js";
 import { Post, Tag } from "../models/Post.js";
+import { File } from "../models/File.js";
 
 export async function collectionsView(req: Request, res: Response, next: NextFunction) {
     const user = req.user as User;
@@ -50,7 +51,7 @@ export async function getCollection(req: Request, res: Response, next: NextFunct
             id: collectionId
         }, include: [{
             model: Post,
-            include: [User, Tag]
+            include: [User, Tag, File]
         }]
     });
     if (!collection) return next(new Error('Colección no encontrada.'));

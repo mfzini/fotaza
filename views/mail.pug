@@ -15,12 +15,12 @@ block main
             .th Remitente
             .th Fecha
         for m in inbox
-            .tr(id=m.id class=`${!m.readed ? 'unreaded' : ''} messageRow`
+            .tr(id=m.id class=`${!m.readed ? 'new' : ''}`
                 data-sender=`${m.from.username}`
                 data-sender-id=m.from.id
                 data-subject=`${m.subject}`
                 data-created-at=`${new Date(m.createdAt).toLocaleString('es')}`
-                data-message=`${m.message}`)
+                data-message=`${m.message}`).messageRow
                 .td #{m.subject}
                 .td #{m.from.username}
                 .td #{`${new Date(m.createdAt).toLocaleString('es')}`}
@@ -31,7 +31,11 @@ block main
             .th Fecha
             .th  
         for m in outbox
-            .tr(id=m.id data-sender=`${m.to.username}` data-subject=`${m.subject}` data-created-at=`${new Date(m.createdAt).toLocaleString('es')}` data-message=`${m.message}`).messageRow
+            .tr(id=m.id
+                data-sender=`${m.to.username}`
+                data-subject=`${m.subject}`
+                data-created-at=`${new Date(m.createdAt).toLocaleString('es')}`
+                data-message=`${m.message}`).messageRow
                 .td #{m.subject}
                 .td #{m.to.username}
                 .td #{`${new Date(m.createdAt).toLocaleString('es')}`}

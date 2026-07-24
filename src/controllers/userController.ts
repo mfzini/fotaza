@@ -17,7 +17,6 @@ export async function getProfile(req: Request, res: Response, next: NextFunction
         where: {
             authorId: profileId
         },
-        limit: 20,
         order: [['createdAt', 'DESC']],
         include: [Tag, File]
     });

@@ -77,11 +77,12 @@ export class Post extends Model {
     static async notify(p: Post) {
         const u = await p.$get('author');
         const list = await Follow.findAll({ where: { targetId: p.authorId } });
+        console.log(list)
         const promises : Promise<Notification>[] = [];
         list.forEach(f => {
             promises.push(Notification.create({
-                target: f.userId,
-                message: `${u?.username} ha creado una nueva publicación.`,
+                userId: f.userId,
+                message: `${u?.username} ha creado una nueva publicación ${p.title}.`,
                 href: `/post/${p.id}`
             }))
         });

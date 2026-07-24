@@ -20,4 +20,23 @@ block main
                 #posts
                     each p in posts
                         +postCard(p)
-        
+                if totalPages > 1
+                    .pagination-container
+                        ul.pagination
+                            if page > 1
+                                li: a.btn-page(href=`/?page=${page - 1}&limit=${limit}`) « Anterior
+                            else
+                                li: span.btn-page.disabled « Anterior
+                            - let i = 1;
+                            while i <= totalPages
+                                li
+                                    if i === page
+                                        span.btn-page.active= i
+                                    else
+                                        a.btn-page(href=`/?page=${i}&limit=${limit}`)= i
+                                - i++;
+                            if page < totalPages
+                                li: a.btn-page(href=`/?page=${page + 1}&limit=${limit}`) Siguiente »
+                            else
+                                li: span.btn-page.disabled Siguiente »
+            
